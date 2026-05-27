@@ -1,0 +1,51 @@
+name: GSSoC — Welcome new contributors
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 Welcome to **TermUI**, @${{ github.actor }}! Thanks for opening your first issue.
+
+            **Quick checks:**
+            1. ⭐ Star the repo (required for GSSoC point credit)
+            2. 📖 Read [CONTRIBUTING.md](https://github.com/Karanjot786/TermUI/blob/main/CONTRIBUTING.md)
+            3. 🏷  Make sure you used the right issue template
+
+            **To claim an issue**, comment `I would like to work on this`. The bot auto-assigns you. You have **7 days** to open a PR.
+
+            **GSSoC 2026 point system:** every approved PR earns `+50 base` + difficulty + quality + type bonuses. See [`gssoc-points.md`](https://github.com/Karanjot786/TermUI/blob/main/docs/gssoc-points.md).
+
+            A maintainer will review within 48 hours.
+
+          pr-message: |
+            🎉 Thanks for your first PR to **TermUI**, @${{ github.actor }}!
+
+            **Before your PR can be merged:**
+            1. ⭐ **Star the repo** — required (the `star-check` job blocks merge until you do)
+            2. ✅ Make sure all checks are green: `build`, `test`, `typecheck`
+            3. 🏷  PR title must follow `type: short description` (e.g. `fix: handle empty list`)
+            4. 🔗 Link the issue you're closing in the description
+
+            **GSSoC 2026:** points are calculated from labels after merge:
+            - `gssoc:approved` → +50 base points
+            - `level:beginner|intermediate|advanced|critical` → +20/35/55/80
+            - `quality:clean|exceptional` → × 1.2 / × 1.5
+            - `type:*` → stackable bonus
+
+            A reviewer will look at this within **48 hours**. Ping `@Karanjot786` on Discord if it's urgent.
+
+            🚀 Welcome to the cohort!
