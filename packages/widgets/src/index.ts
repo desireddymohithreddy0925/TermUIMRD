@@ -77,6 +77,9 @@ export { StatusMessage } from './feedback/StatusMessage.js';
 export type { StatusMessageOptions, StatusVariant } from './feedback/StatusMessage.js';
 export { Banner } from './feedback/Banner.js';
 export type { BannerOptions } from './feedback/Banner.js';
+export { Alert } from './feedback/Alert.js';
+export type { AlertOptions } from './feedback/Alert.js';
+
 
 // ── New Data Widgets ──────────────────────────────────
 export { KeyValue } from './data/KeyValue.js';
