@@ -24,7 +24,12 @@ describe('Skeleton', () => {
 
     it('creates skeleton and subscribes to timer', () => {
         const s = new Skeleton();
-        expect(s).toBeDefined();
+        s.updateRect({ x: 0, y: 0, width: 5, height: 1 });
+        const screen = new Screen(5, 1);
+        s.render(screen);
+        const row = screen.back[0].map((c: { char: string }) => c.char).join('');
+        expect(row.length).toBe(5);
+        expect(row.trim()).not.toBe('');
         expect(motion.timerPoolSubscribe).toHaveBeenCalled();
     });
 
