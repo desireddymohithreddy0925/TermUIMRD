@@ -15,6 +15,8 @@ import { FileWatcher, type FileChange } from './watcher.js';
 import { DevTools } from './devtools.js';
 import { ErrorOverlay } from './error-overlay.js';
 
+const log = (msg: string) => process.stdout.write(msg + '\n');
+
 export interface DevServerOptions {
     /** Project root directory */
     rootDir: string;
@@ -105,7 +107,7 @@ export class DevServer {
         });
 
         this._watcher.onError((err) => {
-            console.error(`[termui] Watch error: ${err.message}`);
+            process.stderr.write(`[termui] Watch error: ${err.message}\n`);
         });
     }
 
@@ -135,17 +137,17 @@ export class DevServer {
 
         this._running = true;
 
-        console.log();
-        console.log('  ⚡ TermUI Dev Server (Bun)');
-        console.log(`  📁 ${this._rootDir}`);
+        log('');
+        log('  ⚡ TermUI Dev Server (Bun)');
+        log(`  📁 ${this._rootDir}`);
 
         if (this._entryFile) {
-            console.log(`  🚀 Entry: ${this._entryFile}`);
+            log(`  🚀 Entry: ${this._entryFile}`);
         }
 
-        console.log('  👀 Watching for changes...');
-        console.log('  F12 toggles DevTools');
-        console.log();
+        log('  👀 Watching for changes...');
+        log('  F12 toggles DevTools');
+        log('');
 
         this._watcher.start();
 
@@ -175,7 +177,7 @@ export class DevServer {
 
         this._banner = null;
 
-        console.log('\n  Dev server stopped.\n');
+        log('\n  Dev server stopped.\n');
     }
 
     // ── Child process lifecycle ──
@@ -257,7 +259,7 @@ export class DevServer {
                 ) {
                     const time = new Date().toLocaleTimeString();
 
-                    console.log(
+                    log(
                         `  ❌ [${time}] Process exited (code: ${exitCode}, signal: ${signal})`
                     );
 
@@ -277,8 +279,8 @@ export class DevServer {
                 this._child = null;
             });
         } catch (err) {
-            console.error(
-                `  ❌ Failed to spawn: ${(err as Error).message}`
+            process.stderr.write(
+                `  ❌ Failed to spawn: ${(err as Error).message}\n`
             );
         }
     }
@@ -333,7 +335,7 @@ export class DevServer {
 
         this._hideErrorOverlay();
 
-        console.log(
+        log(
             `  ${icon} [${time}] ${change.filename} changed — reloading...`
         );
 
@@ -386,7 +388,7 @@ export class DevServer {
                 const respawnTime =
                     new Date().toLocaleTimeString();
 
-                console.log(
+                log(
                     `  🔄 [${respawnTime}] Respawned`
                 );
 
