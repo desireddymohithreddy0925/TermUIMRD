@@ -1,6 +1,6 @@
 // SearchableSelect — searchable dropdown selector with filtering
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, type KeyEvent, mergeStyles, defaultStyle, styleToCellAttrs, caps } from '@termuijs/core';
+import { type Style, type Screen, type KeyEvent, mergeStyles, defaultStyle, styleToCellAttrs, caps, truncate } from '@termuijs/core';
 
 export interface SearchableSelectOption {
     label: string;
@@ -125,7 +125,7 @@ export class SearchableSelect extends Widget {
         const pointer = caps.unicode ? '➔' : '>';
         const searchLine = pointer + ' ' + displayText;
         const searchStyle = this._searchQuery.length > 0 ? attrs : { ...attrs, dim: true };
-        screen.writeString(x, y, searchLine.slice(0, width), searchStyle);
+        screen.writeString(x, y, truncate(searchLine, width), searchStyle);
 
         const maxVisible = height - 1;
         const visibleCount = Math.min(this._filteredOptions.length, maxVisible);
@@ -134,7 +134,7 @@ export class SearchableSelect extends Widget {
             const isSelected = i === this._selectedIndex;
             const prefix = isSelected ? (caps.unicode ? '● ' : '* ') : '  ';
             const line = prefix + opt.label;
-            screen.writeString(x, y + 1 + i, line.slice(0, width), {
+            screen.writeString(x, y + 1 + i, truncate(line, width), {
                 ...attrs,
                 fg: isSelected ? this._activeColor : attrs.fg,
                 bold: isSelected,
