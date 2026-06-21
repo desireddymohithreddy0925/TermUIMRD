@@ -87,6 +87,7 @@ export class App {
     private _unsubUncaughtException: (() => void) | null = null;
     private _unsubUnhandledRejection: (() => void) | null = null;
     private _widgetById = new Map<string, any>(); // any: Widget shape varies; narrowed at retrieval
+    private _hoveredWidgetId: string | null = null;
     private _pendingFocusState = new Map<string, boolean>();
 
     private _consecutiveRenderFailures = 0;
@@ -134,6 +135,7 @@ export class App {
         }
 
         this._mounted = true;
+        this._hoveredWidgetId = null;
         // Focus subscriptions are interactive-only; fallback mount returns
         // without unmount(), so constructor subscriptions would leak there.
         this._subscribeFocusEvents();
@@ -217,6 +219,26 @@ export class App {
         // Forward mouse events
         this._unsubMouse = this.input.onMouse((event) => {
             this.events.emit('mouse', event);
+
+            if (event.type === 'mousemove') {
+                const hitWidget = this._findWidgetAt(event.x, event.y);
+                const hitId = hitWidget?.id ?? null;
+
+                if (hitId !== this._hoveredWidgetId) {
+                    const prevWidget = this._hoveredWidgetId
+                        ? this._widgetById.get(this._hoveredWidgetId)
+                        : null;
+                    if (prevWidget) {
+                        prevWidget.events.emit('mouseleave', { ...event, type: 'mouseleave' });
+                    }
+
+                    if (hitWidget) {
+                        hitWidget.events.emit('mouseenter', { ...event, type: 'mouseenter' });
+                    }
+
+                    this._hoveredWidgetId = hitId;
+                }
+            }
         });
 
         // Forward paste events
@@ -282,6 +304,7 @@ export class App {
     unmount(exitCode: number = 0): void {
         if (!this._mounted) return;
         this._mounted = false;
+        this._hoveredWidgetId = null;
 
         this._rootWidget.unmount?.();
         this.events.emit('unmount', undefined as any); // as any: EventEmitter generic requires a value; payload is intentionally void
@@ -565,6 +588,18 @@ export class App {
         }
     }
 
+    private _findWidgetAt(x: number, y: number): any { // any: widget shape varies; narrowed at retrieval
+        let found: any = null; // any: WidgetNode shape not statically known at traversal
+        for (const widget of this._widgetById.values()) {
+            const r = widget.rect;
+            if (!r) continue;
+            if (x >= r.x && x < r.x + r.width && y >= r.y && y < r.y + r.height) {
+                found = widget;
+            }
+        }
+        return found;
+    }
+
     private _isFocusAwareWidget(widget: unknown): widget is FocusAwareWidget {
         return typeof widget === 'object'
             && widget !== null
@@ -574,3 +609,11 @@ export class App {
             && typeof widget.isFocused === 'boolean';
     }
 }
+
+
+
+
+
+
+
+
