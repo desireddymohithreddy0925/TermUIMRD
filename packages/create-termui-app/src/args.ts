@@ -10,7 +10,7 @@ export interface CliArgs {
     dryRun?: boolean;
 }
 
-const TEMPLATE_KEYS = [
+export const TEMPLATE_KEYS = [
     "empty",
     "dashboard",
     "interactive-tool",
