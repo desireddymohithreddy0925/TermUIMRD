@@ -1,0 +1,62 @@
+.cd-code {
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    margin: 0 0 var(--space-4);
+}
+.cd-code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-tertiary);
+}
+.cd-code-label {
+    font-family: var(--font-code);
+    font-size: var(--text-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+.cd-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.cd-copy-btn:hover {
+    color: var(--accent);
+    border-color: var(--border-accent);
+    background: var(--accent-glow);
+}
+.cd-copy-btn.is-copied {
+    color: var(--accent);
+    border-color: var(--border-accent);
+}
+.cd-code-body {
+    overflow-x: auto;
+    font-family: var(--font-code);
+    font-size: var(--text-sm);
+    line-height: 1.65;
+}
+.cd-code-body .shiki,
+.cd-code-body pre.shiki {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    background: transparent !important;
+}
+.cd-code-body .cd-code-plain {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    color: var(--text-primary);
+    white-space: pre;
+}
