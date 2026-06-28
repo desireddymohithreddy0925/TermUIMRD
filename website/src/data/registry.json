@@ -29,7 +29,7 @@
           "name": "activeColor",
           "type": "Color",
           "required": false,
-          "description": "Separator drawn between segments"
+          "description": "Color of the last (current) segment"
         }
       ]
     }
@@ -154,7 +154,7 @@
           "name": "style",
           "type": "'1.' | 'a.' | 'i.'",
           "required": false,
-          "description": "Indent width per level"
+          "description": "Numbering style: '1.' for arabic, 'a.' for lowercase alpha, 'i.' for lowercase roman"
         }
       ]
     }
@@ -189,7 +189,7 @@
           "name": "gutterWidth",
           "type": "number",
           "required": false,
-          "description": "default: true"
+          "description": ""
         }
       ]
     }
@@ -334,7 +334,7 @@
           "name": "args",
           "type": "string[]",
           "required": false,
-          "description": "The command to spawn */ command?: string; /** Arguments to the command"
+          "description": "Arguments to the command"
         }
       ]
     }
@@ -369,7 +369,7 @@
           "name": "indent",
           "type": "number",
           "required": false,
-          "description": "Bullet characters per nesting level"
+          "description": "Indent width per level"
         }
       ]
     }
@@ -428,6 +428,36 @@
           "type": "string",
           "required": true,
           "description": ""
+        },
+        {
+          "name": "content",
+          "type": "string",
+          "required": true,
+          "description": ""
+        },
+        {
+          "name": "wrap",
+          "type": "boolean",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "align",
+          "type": "'left' | 'center' | 'right'",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "scrollY",
+          "type": "number",
+          "required": false,
+          "description": "Vertical scroll offset (lines to skip from top)"
+        },
+        {
+          "name": "scrollX",
+          "type": "number",
+          "required": false,
+          "description": "Horizontal scroll offset (columns to skip from left)"
         }
       ]
     }
@@ -485,25 +515,25 @@
           "name": "openIndex",
           "type": "number",
           "required": false,
-          "description": "Allow multiple sections open at once"
+          "description": "Index of the initially open section"
         },
         {
           "name": "expandChar",
           "type": "string",
           "required": false,
-          "description": "Allow multiple sections open at once"
+          "description": "Expand indicator char"
         },
         {
           "name": "collapseChar",
           "type": "string",
           "required": false,
-          "description": "Allow multiple sections open at once"
+          "description": "Collapse indicator char"
         },
         {
           "name": "onToggle",
           "type": "(index: number, open: boolean) => void",
           "required": false,
-          "description": "Allow multiple sections open at once"
+          "description": "Callback fired when a section is toggled"
         }
       ]
     }
@@ -532,13 +562,13 @@
           "name": "onSelect",
           "type": "(node: TreeNode, path: number[]) => void",
           "required": false,
-          "description": "The JSON value to display */ data: unknown; /** Callback when a leaf node is selected"
+          "description": "Callback when a leaf node is selected"
         },
         {
           "name": "indent",
           "type": "number",
           "required": false,
-          "description": "The JSON value to display */ data: unknown; /** Callback when a leaf node is selected */ onSelect?: (node: TreeNode, path: number[]) => void; /** Spaces per indent level (default: 2)"
+          "description": "Spaces per indent level (default: 2)"
         }
       ]
     }
@@ -567,13 +597,13 @@
           "name": "onSelect",
           "type": "(node: TreeNode, path: number[]) => void",
           "required": false,
-          "description": "The JSON value to display */ data: unknown; /** Callback when a leaf node is selected"
+          "description": "Callback when a leaf node is selected"
         },
         {
           "name": "indent",
           "type": "number",
           "required": false,
-          "description": "The JSON value to display */ data: unknown; /** Callback when a leaf node is selected */ onSelect?: (node: TreeNode, path: number[]) => void; /** Spaces per indent level (default: 2)"
+          "description": "Spaces per indent level (default: 2)"
         }
       ]
     }
@@ -602,13 +632,13 @@
           "name": "title",
           "type": "string",
           "required": false,
-          "description": "Line direction"
+          "description": "Title centered in the line (horizontal only)"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Line direction"
+          "description": "Line color"
         }
       ]
     }
@@ -637,13 +667,13 @@
           "name": "autoScroll",
           "type": "boolean",
           "required": false,
-          "description": "Highlight rules: keyword → color */ highlight?: Record<string, Color>; /** Auto-scroll to bottom"
+          "description": "Auto-scroll to bottom"
         },
         {
           "name": "maxLines",
           "type": "number",
           "required": false,
-          "description": "Highlight rules: keyword → color */ highlight?: Record<string, Color>; /** Auto-scroll to bottom */ autoScroll?: boolean; /** Maximum lines to retain (0 = unlimited)"
+          "description": "Maximum lines to retain (0 = unlimited)"
         }
       ]
     }
@@ -736,13 +766,13 @@
           "name": "labelStyle",
           "type": "Partial<Style>",
           "required": false,
-          "description": "Custom styles for the key (e.g., fg/bg colors)"
+          "description": "Custom styles for the label text"
         },
         {
           "name": "separator",
           "type": "string",
           "required": false,
-          "description": "Custom styles for the key (e.g., fg/bg colors)"
+          "description": "Horizontal separator string"
         }
       ]
     }
@@ -777,7 +807,7 @@
           "name": "shape",
           "type": "'square' | 'circle'",
           "required": false,
-          "description": "Override the dynamically generated color */ color?: Color; /** Shape of the avatar"
+          "description": "Shape of the avatar"
         }
       ]
     }
@@ -1163,13 +1193,13 @@
           "name": "endColor",
           "type": "string",
           "required": false,
-          "description": "Start color (hex string like '#ff0000' or named color string) */ startColor?: string; /** End color (hex string like '#0000ff' or named color string)"
+          "description": "End color (hex string like '#0000ff' or named color string)"
         },
         {
           "name": "align",
           "type": "'left' | 'center' | 'right'",
           "required": false,
-          "description": "Start color (hex string like '#ff0000' or named color string) */ startColor?: string; /** End color (hex string like '#0000ff' or named color string) */ endColor?: string; /** Text alignment"
+          "description": "Text alignment"
         }
       ]
     }
@@ -1210,19 +1240,19 @@
           "name": "expandChar",
           "type": "string",
           "required": false,
-          "description": "Start open"
+          "description": "Expand indicator char"
         },
         {
           "name": "collapseChar",
           "type": "string",
           "required": false,
-          "description": "Start open"
+          "description": "Collapse indicator char"
         },
         {
           "name": "onToggle",
           "type": "(open: boolean) => void",
           "required": false,
-          "description": "Start open"
+          "description": "Callback when toggled"
         }
       ]
     }
@@ -1280,7 +1310,7 @@
           "name": "interval",
           "type": "number",
           "required": false,
-          "description": "Duration to count down from in milliseconds"
+          "description": "Tick interval in milliseconds"
         }
       ]
     }
@@ -1338,19 +1368,19 @@
           "name": "cursor",
           "type": "string",
           "required": false,
-          "description": "Full text content */ text: string; /** Cursor character"
+          "description": "Cursor character"
         },
         {
           "name": "speed",
           "type": "number",
           "required": false,
-          "description": "Full text content */ text: string; /** Cursor character"
+          "description": "Characters to reveal per tick (0 = show all immediately)"
         },
         {
           "name": "blinkInterval",
           "type": "number",
           "required": false,
-          "description": "Full text content */ text: string; /** Cursor character"
+          "description": "Cursor blink interval in ms"
         }
       ]
     }
@@ -1385,7 +1415,7 @@
           "name": "angle",
           "type": "0 | 45",
           "required": false,
-          "description": "Color of the repeated text"
+          "description": "Diagonal tilt angle in characters"
         }
       ]
     }
@@ -1420,7 +1450,7 @@
           "name": "cursor",
           "type": "string",
           "required": false,
-          "description": "Characters revealed per tick"
+          "description": "Cursor glyph drawn at the reveal head"
         }
       ]
     }
@@ -1472,7 +1502,7 @@
           "name": "position",
           "type": "BadgePosition",
           "required": false,
-          "description": "Notification count to display"
+          "description": "Corner position for the badge"
         }
       ]
     }
@@ -1558,19 +1588,19 @@
           "name": "activeColor",
           "type": "Color",
           "required": false,
-          "description": "Layout direction"
+          "description": "Color for active step"
         },
         {
           "name": "completedColor",
           "type": "Color",
           "required": false,
-          "description": "Layout direction"
+          "description": "Color for completed step"
         },
         {
           "name": "pendingColor",
           "type": "Color",
           "required": false,
-          "description": "Layout direction"
+          "description": "Color for pending step"
         }
       ]
     }
@@ -1646,13 +1676,13 @@
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "The target URL for the OSC 8 hyperlink anchor"
+          "description": "Underline and anchor fallback color object"
         },
         {
           "name": "showUrlFallback",
           "type": "boolean",
           "required": false,
-          "description": "The target URL for the OSC 8 hyperlink anchor"
+          "description": "Whether to append the URL visually when terminal capabilities lack unicode/OSC 8 support"
         }
       ]
     }
@@ -1722,37 +1752,37 @@
           "name": "viewportLength",
           "type": "number",
           "required": true,
-          "description": "Total number of content items"
+          "description": "Number of items visible in the viewport"
         },
         {
           "name": "position",
           "type": "number",
           "required": false,
-          "description": "Total number of content items"
+          "description": "Current scroll position (0-based)"
         },
         {
           "name": "orientation",
           "type": "ScrollbarOrientation",
           "required": false,
-          "description": "Total number of content items"
+          "description": "Scrollbar orientation"
         },
         {
           "name": "thumbColor",
           "type": "Color",
           "required": false,
-          "description": "Total number of content items"
+          "description": "Color of the thumb"
         },
         {
           "name": "trackColor",
           "type": "Color",
           "required": false,
-          "description": "Total number of content items"
+          "description": "Color of the track"
         },
         {
           "name": "showArrows",
           "type": "boolean",
           "required": false,
-          "description": "Total number of content items"
+          "description": "Show begin/end arrow symbols"
         }
       ]
     }
@@ -1781,7 +1811,7 @@
           "name": "message",
           "type": "string",
           "required": true,
-          "description": "Variant determines icon and border color */ variant?: StatusVariant; /** The message to display"
+          "description": "The message to display"
         }
       ]
     }
@@ -1810,13 +1840,13 @@
           "name": "title",
           "type": "string",
           "required": false,
-          "description": "Variant determines border color */ variant?: StatusVariant; /** Title displayed on first line in bold"
+          "description": "Title displayed on first line in bold"
         },
         {
           "name": "body",
           "type": "string",
           "required": false,
-          "description": "Variant determines border color */ variant?: StatusVariant; /** Title displayed on first line in bold */ title?: string; /** Body text"
+          "description": "Body text"
         }
       ]
     }
@@ -1916,7 +1946,7 @@
           "name": "icon",
           "type": "string",
           "required": false,
-          "description": "Variant determines icon and color */ variant?: StatusVariant; /** Override the icon character"
+          "description": "Override the icon character"
         }
       ]
     }
@@ -1945,43 +1975,43 @@
           "name": "preset",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option)"
+          "description": "Spinner preset name (preferred option)"
         },
         {
           "name": "variant",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Animation variant (dots, line, braille, etc.)"
         },
         {
           "name": "label",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Text label displayed after the spinner"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Color for the spinner frames"
         },
         {
           "name": "active",
           "type": "boolean",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Whether the spinner is active/animating (default: true)"
         },
         {
           "name": "doneText",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Text to display when active is false (e.g., '✓ Done')"
         },
         {
           "name": "interval",
           "type": "number",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Custom frame interval in milliseconds"
         }
       ]
     }
@@ -2010,43 +2040,43 @@
           "name": "preset",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option)"
+          "description": "Spinner preset name (preferred option)"
         },
         {
           "name": "variant",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Animation variant (dots, line, braille, etc.)"
         },
         {
           "name": "label",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Text label displayed after the spinner"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Color for the spinner frames"
         },
         {
           "name": "active",
           "type": "boolean",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Whether the spinner is active/animating (default: true)"
         },
         {
           "name": "doneText",
           "type": "string",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Text to display when active is false (e.g., '✓ Done')"
         },
         {
           "name": "interval",
           "type": "number",
           "required": false,
-          "description": "Spinner preset name or custom frames */ spinner?: string | { frames: string[]; interval: number }; /** Spinner preset name (preferred option) */ preset?: string; /** Animation variant (dots, line, braille, etc.)"
+          "description": "Custom frame interval in milliseconds"
         }
       ]
     }
@@ -2110,13 +2140,13 @@
           "name": "maxDots",
           "type": "number",
           "required": false,
-          "description": "Label shown before the dots"
+          "description": "Maximum number of dots in the cycle"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Label shown before the dots"
+          "description": "Dot color"
         }
       ]
     }
@@ -2134,7 +2164,26 @@
     "importPath": "@termuijs/widgets",
     "api": {
       "signature": "new Progress(props: ProgressProps = {}, style: Partial<Style> = {},)",
-      "props": []
+      "props": [
+        {
+          "name": "tasks",
+          "type": "ProgressTask[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "columns",
+          "type": "ProgressColumnDefinition[]",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "children",
+          "type": "unknown",
+          "required": false,
+          "description": ""
+        }
+      ]
     }
   },
   {
@@ -2208,37 +2257,37 @@
           "name": "fillChar",
           "type": "string",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion"
+          "description": "Character for the filled portion"
         },
         {
           "name": "emptyChar",
           "type": "string",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion */ fillChar?: string; /** Character for the empty portion"
+          "description": "Character for the empty portion"
         },
         {
           "name": "fillColor",
           "type": "Color",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion */ fillChar?: string; /** Character for the empty portion */ emptyChar?: string; /** Color of the filled portion"
+          "description": "Color of the filled portion"
         },
         {
           "name": "showLabel",
           "type": "boolean",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion */ fillChar?: string; /** Character for the empty portion */ emptyChar?: string; /** Color of the filled portion */ fillColor?: Color; /** Show percentage label"
+          "description": "Show percentage label"
         },
         {
           "name": "labelFormat",
           "type": "'percent' | 'fraction'",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion */ fillChar?: string; /** Character for the empty portion */ emptyChar?: string; /** Color of the filled portion */ fillColor?: Color; /** Show percentage label */ showLabel?: boolean; /** Label format: 'percent' | 'fraction' | 'custom'"
+          "description": "Label format: 'percent' | 'fraction' | 'custom'"
         },
         {
           "name": "total",
           "type": "number",
           "required": false,
-          "description": "Current value (0–1) */ value?: number; /** Character for the filled portion */ fillChar?: string; /** Character for the empty portion */ emptyChar?: string; /** Color of the filled portion */ fillColor?: Color; /** Show percentage label */ showLabel?: boolean; /** Label format: 'percent' | 'fraction' | 'custom' */ labelFormat?: 'percent' | 'fraction'; /** Total for fraction display"
+          "description": "Total for fraction display"
         }
       ]
     }
@@ -2273,7 +2322,7 @@
           "name": "showValues",
           "type": "boolean",
           "required": false,
-          "description": "chars reserved for label column, default: 12"
+          "description": ""
         }
       ]
     }
@@ -2443,7 +2492,7 @@
           "name": "maxVisible",
           "type": "number",
           "required": false,
-          "description": "Placeholder shown when query is empty"
+          "description": "Max number of commands shown at once"
         }
       ]
     }
@@ -2478,31 +2527,31 @@
           "name": "onChange",
           "type": "(checked: boolean) => void",
           "required": false,
-          "description": "Initial checked state"
+          "description": "Callback fired when checked state changes"
         },
         {
           "name": "checkedChar",
           "type": "string",
           "required": false,
-          "description": "Initial checked state"
+          "description": "Character shown when checked"
         },
         {
           "name": "uncheckedChar",
           "type": "string",
           "required": false,
-          "description": "Initial checked state"
+          "description": "Character shown when unchecked"
         },
         {
           "name": "disabled",
           "type": "boolean",
           "required": false,
-          "description": "Initial checked state"
+          "description": "Whether the checkbox is disabled"
         },
         {
           "name": "checkedColor",
           "type": "Color",
           "required": false,
-          "description": "Initial checked state"
+          "description": "Color of the check mark"
         }
       ]
     }
@@ -2620,7 +2669,7 @@
           "name": "loadingText",
           "type": "string",
           "required": false,
-          "description": "Show a loading spinner and suppress activation while true (default: false) */ loading?: boolean; /** Label to display while loading (e.g"
+          "description": "Label to display while loading (e.g"
         }
       ]
     }
@@ -2787,10 +2836,46 @@
       "signature": "new List(itemsOrProps: ListItem[] | ListProps, style: Partial<Style> = {}, onSelect?: (item: ListItem, index: number) => void,)",
       "props": [
         {
-          "name": "itemsOrProps",
-          "type": "ListItem[] | ListProps",
-          "required": true,
+          "name": "items",
+          "type": "ListItem[]",
+          "required": false,
           "description": ""
+        },
+        {
+          "name": "style",
+          "type": "Partial<Style>",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "onSelect",
+          "type": "(item: ListItem, index: number) => void",
+          "required": false,
+          "description": ""
+        },
+        {
+          "name": "state",
+          "type": "ListState",
+          "required": false,
+          "description": "External state object – if provided, List reads/writes selection through it"
+        },
+        {
+          "name": "onStateChange",
+          "type": "(state: ListState) => void",
+          "required": false,
+          "description": "Called whenever selection or scroll changes"
+        },
+        {
+          "name": "emptyMessage",
+          "type": "string",
+          "required": false,
+          "description": "Message to display when the list is empty"
+        },
+        {
+          "name": "reorderable",
+          "type": "boolean",
+          "required": false,
+          "description": "Allow items to be reordered via moveItem()"
         }
       ]
     }
@@ -2819,55 +2904,55 @@
           "name": "itemHeight",
           "type": "number",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1)"
+          "description": "Height of each item in rows (default: 1)"
         },
         {
           "name": "fixedItemHeight",
           "type": "number",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight"
+          "description": "Fixed height of each item, alias for itemHeight"
         },
         {
           "name": "memoizeLayout",
           "type": "boolean",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true)"
+          "description": "Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true)"
         },
         {
           "name": "renderItem",
           "type": "(index: number) => string",
           "required": true,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index"
+          "description": "Render function: returns the string content for an item at a given index"
         },
         {
           "name": "style",
           "type": "Partial<Style>",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index */ renderItem: (index: number) => string; /** Style overrides"
+          "description": "Style overrides"
         },
         {
           "name": "onSelect",
           "type": "(index: number) => void",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index */ renderItem: (index: number) => string; /** Style overrides */ style?: Partial<Style>; /** Callback when an item is selected (Enter key)"
+          "description": "Callback when an item is selected (Enter key)"
         },
         {
           "name": "overscan",
           "type": "number",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index */ renderItem: (index: number) => string; /** Style overrides */ style?: Partial<Style>; /** Callback when an item is selected (Enter key) */ onSelect?: (index: number) => void; /** Number of overscan rows to render above/below the viewport (default: 2)"
+          "description": "Number of overscan rows to render above/below the viewport (default: 2)"
         },
         {
           "name": "showScrollbar",
           "type": "boolean",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index */ renderItem: (index: number) => string; /** Style overrides */ style?: Partial<Style>; /** Callback when an item is selected (Enter key) */ onSelect?: (index: number) => void; /** Number of overscan rows to render above/below the viewport (default: 2) */ overscan?: number; /** Show scrollbar (default: true)"
+          "description": "Show scrollbar (default: true)"
         },
         {
           "name": "springScroll",
           "type": "boolean",
           "required": false,
-          "description": "Total number of items (the full dataset size) */ totalItems: number; /** Height of each item in rows (default: 1) */ itemHeight?: number; /** Fixed height of each item, alias for itemHeight */ fixedItemHeight?: number; /** Whether to memoize the layout and bypass Flexbox recalculation on scroll frames (default: true) */ memoizeLayout?: boolean; /** Render function: returns the string content for an item at a given index */ renderItem: (index: number) => string; /** Style overrides */ style?: Partial<Style>; /** Callback when an item is selected (Enter key) */ onSelect?: (index: number) => void; /** Number of overscan rows to render above/below the viewport (default: 2) */ overscan?: number; /** Show scrollbar (default: true) */ showScrollbar?: boolean; /** Enable spring scroll animations (default: true, respects prefersReducedMotion)"
+          "description": "Enable spring scroll animations (default: true, respects prefersReducedMotion)"
         }
       ]
     }
@@ -2981,7 +3066,7 @@
           "name": "borderColor",
           "type": "Color",
           "required": false,
-          "description": "Required title shown in the top border */ title: string; /** Optional color for the border and title"
+          "description": "Optional color for the border and title"
         }
       ]
     }
@@ -3126,13 +3211,13 @@
           "name": "showScrollbar",
           "type": "boolean",
           "required": false,
-          "description": "Total height of content in rows */ contentHeight?: number; /** Show scrollbar indicator on right edge"
+          "description": "Show scrollbar indicator on right edge"
         },
         {
           "name": "scrollAccel",
           "type": "boolean",
           "required": false,
-          "description": "Total height of content in rows */ contentHeight?: number; /** Show scrollbar indicator on right edge */ showScrollbar?: boolean; /** Whether to use scroll acceleration"
+          "description": "Whether to use scroll acceleration"
         }
       ]
     }
@@ -3184,7 +3269,7 @@
           "name": "borderColor",
           "type": "Color",
           "required": false,
-          "description": "Optional title shown in the top border */ title?: string; /** Color for the border and title"
+          "description": "Color for the border and title"
         }
       ]
     }
@@ -3219,7 +3304,7 @@
           "name": "fit",
           "type": "'contain' | 'cover'",
           "required": false,
-          "description": "Width:height ratio */ ratio?: number; /** contain = fit inside, cover = fill"
+          "description": "contain = fit inside, cover = fill"
         }
       ]
     }
@@ -3271,7 +3356,7 @@
           "name": "vertical",
           "type": "boolean",
           "required": false,
-          "description": "Center horizontally (default: true) */ horizontal?: boolean; /** Center vertically (default: true)"
+          "description": "Center vertically (default: true)"
         }
       ]
     }
@@ -3300,19 +3385,19 @@
           "name": "label",
           "type": "string",
           "required": false,
-          "description": "Direction of the divider line */ orientation?: DividerOrientation; /** Optional centered label inside the line"
+          "description": "Optional centered label inside the line"
         },
         {
           "name": "char",
           "type": "string",
           "required": false,
-          "description": "Direction of the divider line */ orientation?: DividerOrientation; /** Optional centered label inside the line */ label?: string; /** Character used to draw the line (overrides default)"
+          "description": "Character used to draw the line (overrides default)"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Direction of the divider line */ orientation?: DividerOrientation; /** Optional centered label inside the line */ label?: string; /** Character used to draw the line (overrides default) */ char?: string; /** Color of the line"
+          "description": "Color of the line"
         }
       ]
     }
@@ -3429,7 +3514,7 @@
           "name": "gap",
           "type": "number",
           "required": false,
-          "description": "Number of columns"
+          "description": "Vertical gap between items"
         }
       ]
     }
@@ -3471,13 +3556,13 @@
           "name": "rows",
           "type": "number | string",
           "required": false,
-          "description": "CSS grid-template-columns track definitions, e.g"
+          "description": "CSS grid-template-rows track definitions, e.g"
         },
         {
           "name": "gap",
           "type": "number",
           "required": false,
-          "description": "CSS grid-template-columns track definitions, e.g"
+          "description": "Grid gap in characters/cells"
         }
       ]
     }
@@ -3506,13 +3591,13 @@
           "name": "rows",
           "type": "number | string",
           "required": false,
-          "description": "CSS grid-template-columns track definitions, e.g"
+          "description": "CSS grid-template-rows track definitions, e.g"
         },
         {
           "name": "gap",
           "type": "number",
           "required": false,
-          "description": "CSS grid-template-columns track definitions, e.g"
+          "description": "Grid gap in characters/cells"
         }
       ]
     }
@@ -3629,37 +3714,37 @@
           "name": "headerColor",
           "type": "Color",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row"
+          "description": "Color for the header row"
         },
         {
           "name": "stripe",
           "type": "boolean",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped"
+          "description": "Whether rows are zebra-striped"
         },
         {
           "name": "stripeColor",
           "type": "Color",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color"
+          "description": "Stripe color"
         },
         {
           "name": "separator",
           "type": "string",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color */ stripeColor?: Color; /** Column separator character"
+          "description": "Column separator character"
         },
         {
           "name": "indent",
           "type": "number",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color */ stripeColor?: Color; /** Column separator character */ separator?: string; /** Indentation per depth (default 2)"
+          "description": "Indentation per depth (default 2)"
         },
         {
           "name": "onSelect",
           "type": "(row: TreeTableRow) => void",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color */ stripeColor?: Color; /** Column separator character */ separator?: string; /** Indentation per depth (default 2) */ indent?: number; /** Callback when a row is selected"
+          "description": "Callback when a row is selected"
         }
       ]
     }
@@ -3679,8 +3764,8 @@
       "signature": "new Table(columnsOrProps: TableColumn[] | TableProps, rows: TableRow[] = [], style: Partial<Style> = {}, options: TableOptions = {},)",
       "props": [
         {
-          "name": "columnsOrProps",
-          "type": "TableColumn[] | TableProps",
+          "name": "columns",
+          "type": "TableColumn[]",
           "required": true,
           "description": ""
         },
@@ -3691,34 +3776,28 @@
           "description": ""
         },
         {
-          "name": "showHeader",
-          "type": "boolean",
+          "name": "style",
+          "type": "Partial<Style>",
           "required": false,
-          "description": "Whether to show the header row"
+          "description": ""
         },
         {
-          "name": "headerColor",
-          "type": "Color",
+          "name": "options",
+          "type": "TableOptions",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row"
+          "description": ""
         },
         {
-          "name": "stripe",
-          "type": "boolean",
+          "name": "state",
+          "type": "TableState",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped"
+          "description": "External state object – if provided, Table syncs rows through it"
         },
         {
-          "name": "stripeColor",
-          "type": "Color",
+          "name": "onStateChange",
+          "type": "(state: TableState) => void",
           "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color"
-        },
-        {
-          "name": "separator",
-          "type": "string",
-          "required": false,
-          "description": "Whether to show the header row */ showHeader?: boolean; /** Color for the header row */ headerColor?: Color; /** Whether rows are zebra-striped */ stripe?: boolean; /** Stripe color */ stripeColor?: Color; /** Column separator character"
+          "description": "Called whenever rows change via setRows"
         }
       ]
     }
@@ -3817,19 +3896,19 @@
           "name": "spacing",
           "type": "boolean",
           "required": false,
-          "description": "Indentation for definition lines (default: 2) */ indent?: number; /** Blank line between pairs (default: true)"
+          "description": "Blank line between pairs (default: true)"
         },
         {
           "name": "termColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Indentation for definition lines (default: 2) */ indent?: number; /** Blank line between pairs (default: true) */ spacing?: boolean; /** Color for term labels"
+          "description": "Color for term labels"
         },
         {
           "name": "definitionColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Indentation for definition lines (default: 2) */ indent?: number; /** Blank line between pairs (default: true) */ spacing?: boolean; /** Color for term labels */ termColor?: import('@termuijs/core').Color; /** Color for definition text"
+          "description": "Color for definition text"
         }
       ]
     }
@@ -3861,6 +3940,36 @@
           "description": ""
         },
         {
+          "name": "showHeader",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether to show the header row"
+        },
+        {
+          "name": "headerColor",
+          "type": "Color",
+          "required": false,
+          "description": "Color for the header row"
+        },
+        {
+          "name": "stripe",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether rows are zebra-striped"
+        },
+        {
+          "name": "stripeColor",
+          "type": "Color",
+          "required": false,
+          "description": "Stripe color"
+        },
+        {
+          "name": "separator",
+          "type": "string",
+          "required": false,
+          "description": "Column separator character"
+        },
+        {
           "name": "onSort",
           "type": "(key: string, direction: SortDirection) => void",
           "required": false,
@@ -3870,7 +3979,7 @@
           "name": "onFilter",
           "type": "(filter: string) => void",
           "required": false,
-          "description": "Callback fired when sort changes"
+          "description": "Callback fired when the filter changes"
         }
       ]
     }
@@ -3959,43 +4068,43 @@
           "name": "barWidth",
           "type": "number",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Width of each bar in cells"
         },
         {
           "name": "barGap",
           "type": "number",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Gap between bars in a group"
         },
         {
           "name": "groupGap",
           "type": "number",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Gap between groups"
         },
         {
           "name": "max",
           "type": "number",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Max value for scaling"
         },
         {
           "name": "barColor",
           "type": "Color",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Color for bars without a per-bar color"
         },
         {
           "name": "valueColor",
           "type": "Color",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Color for value labels"
         },
         {
           "name": "labelColor",
           "type": "Color",
           "required": false,
-          "description": "Direction bars grow"
+          "description": "Color for text labels"
         }
       ]
     }
@@ -4071,13 +4180,13 @@
           "name": "showRange",
           "type": "boolean",
           "required": false,
-          "description": "Color of the sparkline */ color?: Color; /** Show min/max labels"
+          "description": "Show min/max labels"
         },
         {
           "name": "marker",
           "type": "'block' | 'braille'",
           "required": false,
-          "description": "Color of the sparkline */ color?: Color; /** Show min/max labels */ showRange?: boolean; /** Rendering style"
+          "description": "Rendering style"
         }
       ]
     }
@@ -4106,13 +4215,13 @@
           "name": "downColor",
           "type": "Color",
           "required": false,
-          "description": "Color for bullish (close > open) candles */ upColor?: Color; /** Color for bearish (close < open) candles"
+          "description": "Color for bearish (close < open) candles"
         },
         {
           "name": "wickColor",
           "type": "Color",
           "required": false,
-          "description": "Color for bullish (close > open) candles */ upColor?: Color; /** Color for bearish (close < open) candles */ downColor?: Color; /** Color for the wick (high/low lines)"
+          "description": "Color for the wick (high/low lines)"
         }
       ]
     }
@@ -4147,31 +4256,31 @@
           "name": "showYAxis",
           "type": "boolean",
           "required": false,
-          "description": "Color of the plotted points/lines */ color?: Color; /** Show Y-axis labels"
+          "description": "Show Y-axis labels"
         },
         {
           "name": "showXAxis",
           "type": "boolean",
           "required": false,
-          "description": "Color of the plotted points/lines */ color?: Color; /** Show Y-axis labels */ showYAxis?: boolean; /** Show X-axis labels"
+          "description": "Show X-axis labels"
         },
         {
           "name": "yLabel",
           "type": "string",
           "required": false,
-          "description": "Color of the plotted points/lines */ color?: Color; /** Show Y-axis labels */ showYAxis?: boolean; /** Show X-axis labels */ showXAxis?: boolean; /** Label for the Y axis"
+          "description": "Label for the Y axis"
         },
         {
           "name": "max",
           "type": "number",
           "required": false,
-          "description": "Color of the plotted points/lines */ color?: Color; /** Show Y-axis labels */ showYAxis?: boolean; /** Show X-axis labels */ showXAxis?: boolean; /** Label for the Y axis */ yLabel?: string; /** Maximum Y value (auto if not set)"
+          "description": "Maximum Y value (auto if not set)"
         },
         {
           "name": "min",
           "type": "number",
           "required": false,
-          "description": "Color of the plotted points/lines */ color?: Color; /** Show Y-axis labels */ showYAxis?: boolean; /** Show X-axis labels */ showXAxis?: boolean; /** Label for the Y axis */ yLabel?: string; /** Maximum Y value (auto if not set) */ max?: number; /** Minimum Y value (auto if not set)"
+          "description": "Minimum Y value (auto if not set)"
         }
       ]
     }
@@ -4312,13 +4421,13 @@
           "name": "high",
           "type": "number",
           "required": false,
-          "description": "Value below this fraction renders the low color"
+          "description": "Value at or above this fraction renders the high color"
         },
         {
           "name": "showLabel",
           "type": "boolean",
           "required": false,
-          "description": "Value below this fraction renders the low color"
+          "description": "Show the percentage label"
         }
       ]
     }
@@ -4453,7 +4562,7 @@
           "name": "downColor",
           "type": "Color",
           "required": false,
-          "description": "Color when up/active */ upColor?: Color; /** Color when down/inactive"
+          "description": "Color when down/inactive"
         }
       ]
     }
@@ -4482,13 +4591,13 @@
           "name": "yLabel",
           "type": "string",
           "required": false,
-          "description": "X axis label */ xLabel?: string; /** Y axis label"
+          "description": "Y axis label"
         },
         {
           "name": "marker",
           "type": "string",
           "required": false,
-          "description": "X axis label */ xLabel?: string; /** Y axis label */ yLabel?: string; /** Point marker"
+          "description": "Point marker"
         },
         {
           "name": "pointColor",
@@ -4511,8 +4620,14 @@
     ],
     "importPath": "@termuijs/widgets",
     "api": {
-      "signature": "new KeyValue(// any is used because pairs can be objects with unknown/arbitrary arbitrary depth properties // eslint-disable-next-line @typescript-eslint/no-explicit-any pairs: Array<KeyValuePair> | Record<string, any>, style: Partial<Style> = {}, opts: KeyValueOptions = {},)",
+      "signature": "new KeyValue(pairs: Array<KeyValuePair> | Record<string, any>, style: Partial<Style> = {}, opts: KeyValueOptions = {},)",
       "props": [
+        {
+          "name": "pairs",
+          "type": "Array<KeyValuePair> | Record<string",
+          "required": true,
+          "description": ""
+        },
         {
           "name": "separator",
           "type": "string",
@@ -4523,13 +4638,13 @@
           "name": "keyColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Separator between key and value (default: ': ') */ separator?: string; /** Color for keys"
+          "description": "Color for keys"
         },
         {
           "name": "valueColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Separator between key and value (default: ': ') */ separator?: string; /** Color for keys */ keyColor?: import('@termuijs/core').Color; /** Color for values"
+          "description": "Color for values"
         }
       ]
     }
@@ -4564,7 +4679,7 @@
           "name": "showLabel",
           "type": "boolean",
           "required": false,
-          "description": "Color of the filled portion */ color?: Color; /** Show percentage label"
+          "description": "Show percentage label"
         }
       ]
     }
@@ -4599,19 +4714,19 @@
           "name": "lowColor",
           "type": "Color",
           "required": false,
-          "description": "Color for maximum value cells */ highColor?: Color; /** Color for minimum value cells"
+          "description": "Color for minimum value cells"
         },
         {
           "name": "rowLabels",
           "type": "string[]",
           "required": false,
-          "description": "Color for maximum value cells */ highColor?: Color; /** Color for minimum value cells */ lowColor?: Color; /** Row labels (left side)"
+          "description": "Row labels (left side)"
         },
         {
           "name": "colLabels",
           "type": "string[]",
           "required": false,
-          "description": "Color for maximum value cells */ highColor?: Color; /** Color for minimum value cells */ lowColor?: Color; /** Row labels (left side) */ rowLabels?: string[]; /** Column labels (top)"
+          "description": "Column labels (top)"
         }
       ]
     }
@@ -4646,19 +4761,19 @@
           "name": "collapsedWidth",
           "type": "number",
           "required": false,
-          "description": "Whether the sidebar is collapsed */ collapsed?: boolean; /** Collapsed width in cells (default: 3)"
+          "description": "Collapsed width in cells (default: 3)"
         },
         {
           "name": "activeColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Whether the sidebar is collapsed */ collapsed?: boolean; /** Collapsed width in cells (default: 3) */ collapsedWidth?: number; /** Active item highlight color"
+          "description": "Active item highlight color"
         },
         {
           "name": "badgeColor",
           "type": "import('@termuijs/core').Color",
           "required": false,
-          "description": "Whether the sidebar is collapsed */ collapsed?: boolean; /** Collapsed width in cells (default: 3) */ collapsedWidth?: number; /** Active item highlight color */ activeColor?: import('@termuijs/core').Color; /** Badge color"
+          "description": "Badge color"
         }
       ]
     }
@@ -4687,13 +4802,13 @@
           "name": "emptyChar",
           "type": "string",
           "required": false,
-          "description": "Filled portion character"
+          "description": "Empty portion character"
         },
         {
           "name": "showLabel",
           "type": "boolean",
           "required": false,
-          "description": "Filled portion character"
+          "description": "Show percentage label at right"
         },
         {
           "name": "fillColor",
@@ -5301,37 +5416,37 @@
           "name": "onSelect",
           "type": "(value: string) => void",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted"
+          "description": "Callback when an item is selected or submitted"
         },
         {
           "name": "onChange",
           "type": "(value: string) => void",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted */ onSelect?: (value: string) => void; /** Callback when the query text changes"
+          "description": "Callback when the query text changes"
         },
         {
           "name": "filter",
           "type": "(query: string, item: string) => boolean",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted */ onSelect?: (value: string) => void; /** Callback when the query text changes */ onChange?: (value: string) => void; /** Custom filter function to override default lowercase startsWith matching"
+          "description": "Custom filter function to override default lowercase startsWith matching"
         },
         {
           "name": "maxSuggestions",
           "type": "number",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted */ onSelect?: (value: string) => void; /** Callback when the query text changes */ onChange?: (value: string) => void; /** Custom filter function to override default lowercase startsWith matching */ filter?: (query: string, item: string) => boolean; /** Maximum number of suggestions to display in dropdown"
+          "description": "Maximum number of suggestions to display in dropdown"
         },
         {
           "name": "placeholder",
           "type": "string",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted */ onSelect?: (value: string) => void; /** Callback when the query text changes */ onChange?: (value: string) => void; /** Custom filter function to override default lowercase startsWith matching */ filter?: (query: string, item: string) => boolean; /** Maximum number of suggestions to display in dropdown"
+          "description": "Placeholder text when query is empty"
         },
         {
           "name": "highlightColor",
           "type": "Color",
           "required": false,
-          "description": "List of search suggestions / candidates */ items: string[]; /** Callback when an item is selected or submitted */ onSelect?: (value: string) => void; /** Callback when the query text changes */ onChange?: (value: string) => void; /** Custom filter function to override default lowercase startsWith matching */ filter?: (query: string, item: string) => boolean; /** Maximum number of suggestions to display in dropdown"
+          "description": "Highlight color for the selected suggestion"
         }
       ]
     }
@@ -5401,19 +5516,19 @@
           "name": "title",
           "type": "string",
           "required": false,
-          "description": "The placement of the popover relative to the anchor"
+          "description": "Title shown in the panel border"
         },
         {
           "name": "borderColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "The placement of the popover relative to the anchor"
+          "description": "Border color"
         },
         {
           "name": "anchor",
           "type": "{ x: number; y: number }",
           "required": false,
-          "description": "The placement of the popover relative to the anchor"
+          "description": "The specific terminal coordinates (row/col) to anchor this popover to"
         }
       ]
     }
@@ -6590,43 +6705,43 @@
           "name": "filter",
           "type": "string[]",
           "required": false,
-          "description": "Initial directory"
+          "description": "Extension filter (e.g"
         },
         {
           "name": "showHidden",
           "type": "boolean",
           "required": false,
-          "description": "Initial directory"
+          "description": "Show dot-files / dot-directories"
         },
         {
           "name": "dirColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "Initial directory"
+          "description": "Foreground colour for directory entries"
         },
         {
           "name": "fileColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "Initial directory"
+          "description": "Foreground colour for file entries"
         },
         {
           "name": "activeColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "Initial directory"
+          "description": "Foreground colour for the highlighted (active) row"
         },
         {
           "name": "onSelect",
           "type": "(path: string) => void",
           "required": false,
-          "description": "Initial directory"
+          "description": "Called with the absolute path when the user selects a file"
         },
         {
           "name": "onCancel",
           "type": "() => void",
           "required": false,
-          "description": "Initial directory"
+          "description": "Called when the user presses Escape"
         }
       ]
     }
@@ -6936,25 +7051,25 @@
           "name": "placeholder",
           "type": "string",
           "required": false,
-          "description": "Mask template"
+          "description": "Character shown in empty slots"
         },
         {
           "name": "onComplete",
           "type": "(value: string) => void",
           "required": false,
-          "description": "Mask template"
+          "description": "Callback when all slots are filled"
         },
         {
           "name": "onChange",
           "type": "(value: string) => void",
           "required": false,
-          "description": "Mask template"
+          "description": "Callback on every change"
         },
         {
           "name": "color",
           "type": "Color",
           "required": false,
-          "description": "Mask template"
+          "description": "Color for the text"
         }
       ]
     }
@@ -7082,31 +7197,31 @@
           "name": "value",
           "type": "number",
           "required": false,
-          "description": "Total number of stars"
+          "description": "Initial rating"
         },
         {
           "name": "filledChar",
           "type": "string",
           "required": false,
-          "description": "Total number of stars"
+          "description": "Filled star character"
         },
         {
           "name": "emptyChar",
           "type": "string",
           "required": false,
-          "description": "Total number of stars"
+          "description": "Empty star character"
         },
         {
           "name": "filledColor",
           "type": "Color",
           "required": false,
-          "description": "Total number of stars"
+          "description": "Color for filled stars"
         },
         {
           "name": "onSelect",
           "type": "(value: number) => void",
           "required": false,
-          "description": "Total number of stars"
+          "description": "Callback when the user confirms a rating via enter"
         }
       ]
     }
@@ -7187,13 +7302,13 @@
           "name": "passwordLabel",
           "type": "string",
           "required": false,
-          "description": "default: 'Username:'"
+          "description": ""
         },
         {
           "name": "onSubmit",
           "type": "(credentials: BasicAuthCredentials) => void",
           "required": false,
-          "description": "default: 'Password:'"
+          "description": ""
         }
       ]
     }
@@ -7339,13 +7454,13 @@
           "name": "maxCompletions",
           "type": "number",
           "required": false,
-          "description": "base directory for relative paths"
+          "description": ""
         },
         {
           "name": "onChange",
           "type": "(value: string) => void",
           "required": false,
-          "description": "max completions shown (default 5)"
+          "description": ""
         },
         {
           "name": "onSubmit",
@@ -7409,37 +7524,37 @@
           "name": "width",
           "type": "number",
           "required": false,
-          "description": "Edge the drawer appears from"
+          "description": "Panel width in columns"
         },
         {
           "name": "height",
           "type": "number",
           "required": false,
-          "description": "Edge the drawer appears from"
+          "description": "Panel height in rows"
         },
         {
           "name": "title",
           "type": "string",
           "required": false,
-          "description": "Edge the drawer appears from"
+          "description": "Optional title shown in the drawer's top border"
         },
         {
           "name": "onClose",
           "type": "() => void",
           "required": true,
-          "description": "Edge the drawer appears from"
+          "description": "Called when the user presses Escape or explicitly closes the drawer"
         },
         {
           "name": "backdropChar",
           "type": "string",
           "required": false,
-          "description": "Edge the drawer appears from"
+          "description": "Character used for the dimmed backdrop"
         },
         {
           "name": "borderColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "Edge the drawer appears from"
+          "description": "Border colour"
         }
       ]
     }
@@ -7620,19 +7735,19 @@
           "name": "categoryColor",
           "type": "Style['fg']",
           "required": false,
-          "description": "Color for the key label boxes */ keyColor?: Style['fg']; /** Color for category headings"
+          "description": "Color for category headings"
         },
         {
           "name": "columns",
           "type": "number",
           "required": false,
-          "description": "Color for the key label boxes */ keyColor?: Style['fg']; /** Color for category headings */ categoryColor?: Style['fg']; /** Number of columns (default 2)"
+          "description": "Number of columns (default 2)"
         },
         {
           "name": "showCategories",
           "type": "boolean",
           "required": false,
-          "description": "Color for the key label boxes */ keyColor?: Style['fg']; /** Color for category headings */ categoryColor?: Style['fg']; /** Number of columns (default 2) */ columns?: number; /** Show category headings (default true)"
+          "description": "Show category headings (default true)"
         }
       ]
     }

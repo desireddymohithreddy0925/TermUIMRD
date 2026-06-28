@@ -153,12 +153,44 @@ export function extractDescription(content: string, name: string): string {
 export interface ApiProp { name: string; type: string; required: boolean; description: string }
 export interface ComponentApi { signature: string; props: ApiProp[] }
 
-/** Pull the leading JSDoc or // description for an interface field. */
+/**
+ * Pull the leading JSDoc or // description for an interface field. Returns ONLY
+ * the comment block immediately above `fieldName`: split the body into lines,
+ * find the line declaring `fieldName:`, then walk UPWARD collecting contiguous
+ * comment lines (single-line `/** ... *​/`, `//`, or a `*`-continuation / block
+ * `/* ... *​/`) directly above it, stopping at the first non-comment line. This
+ * prevents an earlier field's comment from leaking into this field.
+ */
 function fieldDescription(block: string, fieldName: string): string {
-  const re = new RegExp(`(?:\\/\\*\\*([\\s\\S]*?)\\*\\/|\\/\\/([^\\n]*))\\s*\\n\\s*${fieldName}\\??\\s*:`, 'm');
-  const m = re.exec(block);
-  if (!m) return '';
-  return cleanSummary(m[1] ?? m[2] ?? '');
+  const lines = block.split('\n');
+  const declRe = new RegExp(`^\\s*${fieldName}\\??\\s*:`);
+  let declLine = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (declRe.test(lines[i]!)) { declLine = i; break; }
+  }
+  if (declLine === -1) return '';
+
+  const acc: string[] = [];
+  for (let j = declLine - 1; j >= 0; j--) {
+    const line = lines[j]!.trim();
+    if (line === '') break;
+    // Single-line JSDoc: /** text */
+    let mm = /^\/\*\*(.*?)\*\/$/.exec(line);
+    if (mm) { acc.unshift(mm[1]!); continue; }
+    // Line comment: // text
+    if (line.startsWith('//')) { acc.unshift(line.replace(/^\/\/\s?/, '')); continue; }
+    // Continuation of a multi-line block: * text  (or closing */)
+    if (line.startsWith('*')) { acc.unshift(line.replace(/^\*\/?\s?/, '').replace(/\*\/$/, '')); continue; }
+    // Opening of a multi-line block: /** ... (no close on this line)
+    if (line.startsWith('/**') || line.startsWith('/*')) {
+      acc.unshift(line.replace(/^\/\*\*?\s?/, ''));
+      continue;
+    }
+    // First non-comment line above the field: stop.
+    break;
+  }
+  if (!acc.length) return '';
+  return cleanSummary(acc.join(' '));
 }
 
 /**
@@ -200,12 +232,57 @@ function parseFields(body: string): ApiProp[] {
   return props;
 }
 
-/** Parse `interface NameOptions { ... }` fields into props. */
+/**
+ * Locate the source content that defines `interface <name>`. Used to resolve a
+ * parent interface that an options type `extends` but that lives in another
+ * file (e.g. `DataGridOptions extends TableOptions`, where TableOptions is in
+ * Table.ts). Searches the scanned widget/jsx/ui source trees and caches results.
+ * Returns null when no file defines the interface.
+ */
+let _interfaceFileCache: Map<string, string | null> | null = null;
+function findInterfaceSource(name: string): string | null {
+  if (!_interfaceFileCache) {
+    _interfaceFileCache = new Map();
+    const files: { path: string; content: string }[] = [];
+    for (const p of SCAN_PATHS) scanDirectory(join(ROOT, p), files);
+    for (const { content } of files) {
+      const re = /(?:export\s+)?interface\s+(\w+)/g;
+      let mm: RegExpExecArray | null;
+      while ((mm = re.exec(content)) !== null) {
+        if (!_interfaceFileCache.has(mm[1]!)) _interfaceFileCache.set(mm[1]!, content);
+      }
+    }
+  }
+  return _interfaceFileCache.get(name) ?? null;
+}
+
+/**
+ * Parse `interface NameOptions { ... }` fields into props. When the interface
+ * declares `extends SomeParent`, the parent's fields are prepended — one level
+ * of inheritance, parsed recursively. The parent is resolved from this file
+ * first, then from any scanned source file (cross-file extends); a parent that
+ * cannot be found anywhere is skipped gracefully.
+ */
 function parseOptionsInterface(content: string, optionsTypeName: string): ApiProp[] {
-  const re = new RegExp(`interface\\s+${optionsTypeName}\\s*(?:extends[^{]+)?{([\\s\\S]*?)\\n}`, 'm');
+  const re = new RegExp(`interface\\s+${optionsTypeName}\\s*(?:extends\\s+([^{]+?))?\\s*{([\\s\\S]*?)\\n}`, 'm');
   const m = re.exec(content);
   if (!m) return [];
-  return parseFields(m[1]!);
+  const inherited: ApiProp[] = [];
+  if (m[1]) {
+    // `extends A, B` — parse each named parent interface.
+    for (const parent of m[1].split(',').map(s => s.trim().split(/[<\s]/)[0]!).filter(Boolean)) {
+      // Prefer the parent if defined in this file; otherwise look it up across
+      // the scanned source tree (it may be imported from a sibling module).
+      const parentSrc = new RegExp(`interface\\s+${parent}\\b`).test(content)
+        ? content
+        : findInterfaceSource(parent);
+      if (parentSrc) inherited.push(...parseOptionsInterface(parentSrc, parent));
+    }
+  }
+  const local = parseFields(m[2]!);
+  // Prepend inherited fields; a locally-redeclared field overrides the parent.
+  const localNames = new Set(local.map(p => p.name));
+  return [...inherited.filter(p => !localNames.has(p.name)), ...local];
 }
 
 /**
@@ -215,31 +292,58 @@ function parseOptionsInterface(content: string, optionsTypeName: string): ApiPro
 export function extractApi(content: string, name: string): ComponentApi | null {
   const ctor = /constructor\s*\(([\s\S]*?)\)\s*{/.exec(content);
   if (!ctor) return null;
-  const params = ctor[1]!.replace(/\s+/g, ' ').trim();
+  // Strip comments inside the param list before flattening, so a multi-line or
+  // inline comment between params (e.g. KeyValue's `pairs` arg) does not break
+  // the comma-split positional capture.
+  const rawParams = ctor[1]!
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')   // block comments /* ... */
+    .replace(/\/\/[^\n]*/g, ' ');         // line comments // ...
+  const params = rawParams.replace(/\s+/g, ' ').trim();
   const signature = `new ${name}(${params})`;
   const props: ApiProp[] = [];
 
   // Inline object-literal options param: `options?: { ... } = {}`.
   const inlineOpts = /(?:options|opts|props)\??:\s*\{([\s\S]*?)\}\s*(?:=|,|$)/.exec(params);
 
+  // If the FIRST constructor param is a union that includes a `*Props`/`*Options`
+  // interface name (e.g. List's `itemsOrProps: ListItem[] | ListProps`), expand
+  // that interface's fields instead of emitting the raw param name.
+  const firstParam = params.split(',')[0]?.trim() ?? '';
+  const firstType = /^\w+\??:\s*(.+)$/.exec(firstParam)?.[1] ?? '';
+  let unionExpanded = false;
+  if (firstType.includes('|')) {
+    for (const member of firstType.split('|').map(s => s.trim())) {
+      const propsType = /^(\w+(?:Props|Options))\b/.exec(member)?.[1];
+      if (propsType) {
+        const expanded = parseOptionsInterface(content, propsType);
+        if (expanded.length) { props.push(...expanded); unionExpanded = true; break; }
+      }
+    }
+  }
+
   // Positional params: iterate the comma-split list but STOP at the first param
   // whose name is options/opts/props or whose type starts with `{`. A fragment
   // containing a brace means the naive comma-split already fragmented an inline
-  // object, so guard against those broken fragments.
-  for (const p of params.split(',')) {
-    const t = p.trim();
-    if (/[{}]/.test(t) || /=>/.test(t)) break;
-    const pm = /^(\w+)(\??):\s*([^=]+?)(?:=.*)?$/.exec(t);
-    if (!pm) break;
-    if (/^(?:options|opts|props)$/.test(pm[1]!)) break;
-    if (/style/i.test(pm[1]!) || /Options$/.test(pm[3]!.trim())) continue;
-    props.push({ name: pm[1]!, type: pm[3]!.trim(), required: pm[2] !== '?' && !p.includes('='), description: '' });
+  // object, so guard against those broken fragments. Skipped entirely when the
+  // first param was a union we already expanded.
+  if (!unionExpanded) {
+    for (const p of params.split(',')) {
+      const t = p.trim();
+      if (/[{}]/.test(t) || /=>/.test(t)) break;
+      const pm = /^(\w+)(\??):\s*([^=]+?)(?:=.*)?$/.exec(t);
+      if (!pm) break;
+      if (/^(?:options|opts|props)$/.test(pm[1]!)) break;
+      if (/style/i.test(pm[1]!) || /Options$/.test(pm[3]!.trim())) continue;
+      props.push({ name: pm[1]!, type: pm[3]!.trim(), required: pm[2] !== '?' && !p.includes('='), description: '' });
+    }
   }
 
   if (inlineOpts) {
     props.push(...parseFields(inlineOpts[1]!));
-  } else {
-    const optType = /:\s*(?:Partial<)?(\w*Options)\b/.exec(params)?.[1];
+  } else if (!unionExpanded) {
+    // Detect the options param type: a `*Options` OR a `*Props` interface used as
+    // the options param (e.g. Progress's `props: ProgressProps = {}`).
+    const optType = /:\s*(?:Partial<)?(\w*Options|\w*Props)\b/.exec(params)?.[1];
     if (optType) props.push(...parseOptionsInterface(content, optType));
   }
   return { signature, props };

@@ -62,6 +62,51 @@ describe('extractApi', () => {
       expect(p.type).not.toMatch(/\{[^}]*$/);
     }
   });
+  it('data-grid includes inherited TableOptions props', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/data/DataGrid.ts'), 'utf-8');
+    const api = extractApi(src, 'DataGrid');
+    const names = api!.props.map(p => p.name);
+    expect(names).toEqual(expect.arrayContaining(['showHeader', 'stripe', 'onSort']));
+  });
+  it('list expands ListProps from the union first param', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/input/List.ts'), 'utf-8');
+    const api = extractApi(src, 'List');
+    const names = api!.props.map(p => p.name);
+    expect(names).toContain('onSelect');
+    expect(names).not.toContain('itemsOrProps');
+  });
+  it('progress extracts ProgressProps fields', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/feedback/Progress.ts'), 'utf-8');
+    const api = extractApi(src, 'Progress');
+    expect(api!.props.length).toBeGreaterThan(0);
+    expect(api!.props.map(p => p.name)).toEqual(expect.arrayContaining(['tasks', 'columns']));
+  });
+  it('key-value keeps the positional pairs arg despite a multi-line comment', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/data/KeyValue.ts'), 'utf-8');
+    const api = extractApi(src, 'KeyValue');
+    expect(api!.props.map(p => p.name)).toContain('pairs');
+  });
+});
+
+describe('field descriptions', () => {
+  it('do not leak the previous field comment (Alert)', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/feedback/Alert.ts'), 'utf-8');
+    const api = extractApi(src, 'Alert');
+    const message = api!.props.find(p => p.name === 'message');
+    expect(message).toBeDefined();
+    if (message && message.description) expect(message.description.toLowerCase()).not.toContain('variant');
+  });
+  it('do not leak the previous field comment (Panel borderColor vs title)', () => {
+    const src = readFileSync(join(PKG, 'widgets/src/layout/Panel.ts'), 'utf-8');
+    const api = extractApi(src, 'Panel');
+    const borderColor = api!.props.find(p => p.name === 'borderColor');
+    // borderColor's own comment legitimately mentions "title"; the leak to guard
+    // against is the PREVIOUS field's distinct comment ("Required title shown in
+    // the top border") bleeding into this one.
+    if (borderColor && borderColor.description) {
+      expect(borderColor.description.toLowerCase()).not.toContain('required title shown');
+    }
+  });
 });
 
 describe('rewriteImports', () => {
