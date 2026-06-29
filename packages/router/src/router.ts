@@ -367,7 +367,11 @@ export class Router {
         }
 
         if (typeof guardResult === 'string') {
-            this.push(guardResult);
+            const poppedPath = this._history.pop();
+            if (poppedPath) {
+                this._forwardStack.push(poppedPath);
+            }
+            this._executeNavigation(guardResult, { clearForwardStack: false, direction: 'back' });
             return;
         }
 
