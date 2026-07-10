@@ -196,7 +196,16 @@ export class Markdown extends Widget {
     );
 
     screenRow++;
-}
+            else if (line.startsWith('---') || line.startsWith('***')) {
+                const hl = caps.unicode ? '─' : '-';
+                screen.writeString(
+                    rect.x,
+                    rect.y + screenRow,
+                    hl.repeat(rect.width),
+                    { dim: true }
+                );
+                screenRow++;
+            }
             else if (line.startsWith('- ')) {
                 const bullet = caps.unicode ? '•' : '*';
 
