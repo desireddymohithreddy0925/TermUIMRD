@@ -54,6 +54,30 @@ export class Combobox extends Widget {
         );
     }
 
+    /**
+     * Programmatically clear the combobox input and selection.
+     */
+    public clear(): void {
+        this._inputValue = '';
+        this._committedValue = '';
+        this._selectedIndex = -1;
+        this._isOpen = false;
+        this.markDirty();
+    }
+
+    /**
+     * Programmatically set the selected value.
+     */
+    public setValue(value: string): void {
+        const option = this._options.find(o => o.value === value);
+        if (option) {
+            this._inputValue = option.label;
+            this._committedValue = option.value;
+            this._selectedIndex = -1;
+            this.markDirty();
+        }
+    }
+
     handleKey(event: KeyEvent): void {
         const key = event.key;
         const filtered = this.filtered;
