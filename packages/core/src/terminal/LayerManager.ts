@@ -116,6 +116,42 @@ export class LayerManager {
     }
 
     /**
+     * Brings the specified layer to the front by assigning it a z-index higher than all others.
+     */
+    bringToFront(id: string): void {
+        const layer = this._layers.get(id);
+        if (!layer) return;
+
+        let maxZ = -Infinity;
+        for (const l of this._layers.values()) {
+            if (l.id !== id && l.zIndex > maxZ) {
+                maxZ = l.zIndex;
+            }
+        }
+        if (layer.zIndex <= maxZ) {
+            layer.zIndex = maxZ + 1;
+        }
+    }
+
+    /**
+     * Sends the specified layer to the back by assigning it a z-index lower than all others.
+     */
+    sendToBack(id: string): void {
+        const layer = this._layers.get(id);
+        if (!layer) return;
+
+        let minZ = Infinity;
+        for (const l of this._layers.values()) {
+            if (l.id !== id && l.zIndex < minZ) {
+                minZ = l.zIndex;
+            }
+        }
+        if (layer.zIndex >= minZ) {
+            layer.zIndex = minZ - 1;
+        }
+    }
+
+    /**
      * Get all layers sorted by z-index (ascending).
      */
     getSortedLayers(): Layer[] {
