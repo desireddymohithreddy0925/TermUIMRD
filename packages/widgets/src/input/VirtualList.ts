@@ -229,6 +229,16 @@ export class VirtualList extends Widget {
         });
     }
 
+    /** Scroll to the very top */
+    scrollToTop(): void {
+        this.scrollToIndex(0, 'start');
+    }
+
+    /** Scroll to the very bottom */
+    scrollToBottom(): void {
+        this.scrollToIndex(this._totalItems - 1, 'end');
+    }
+
     /** Confirm the current selection */
     confirm(): void {
         if (this._totalItems > 0) {
