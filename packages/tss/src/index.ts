@@ -49,6 +49,8 @@ export type { AutoThemeProviderProps } from './AutoThemeProvider.js';
 // Imperative ThemeProvider singleton
 export { ThemeProvider } from './themeProvider.js';
 export type { ThemeChangeListener } from './themeProvider.js';
+export { themeStore } from './themeStore.js';
+export type { ThemeStoreState } from './themeStore.js';
 export * from './media.js';
 export * from './importer.js';
 export { lighten, darken, alpha, evalColorFunction } from './color-functions.js';
