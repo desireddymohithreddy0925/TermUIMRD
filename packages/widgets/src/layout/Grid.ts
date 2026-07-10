@@ -25,14 +25,77 @@ export interface GridItemOptions {
     rowEnd?: number | string;
 }
 
+import type { LayoutNode } from '@termuijs/core';
+
+export interface ColSpan {
+    sm?: number;
+    md?: number;
+    lg?: number;
+}
+
+export interface ColOptions {
+    span?: number | ColSpan;
+    children?: Widget[];
+}
+
+/**
+ * Col — a column in a responsive 12-column grid.
+ */
+export class Col extends Widget {
+    private _spanConfig: number | ColSpan;
+
+    constructor(style: Partial<Style> = {}, options: ColOptions = {}) {
+        super(style);
+        this._spanConfig = options.span ?? 12;
+
+        if (options.children) {
+            for (const child of options.children) {
+                this.addChild(child);
+            }
+        }
+    }
+
+    applyBreakpoint(breakpoint: 'sm' | 'md' | 'lg'): void {
+        let span = 12;
+        if (typeof this._spanConfig === 'number') {
+            span = this._spanConfig;
+        } else {
+            if (breakpoint === 'lg' && this._spanConfig.lg !== undefined) {
+                span = this._spanConfig.lg;
+            } else if ((breakpoint === 'lg' || breakpoint === 'md') && this._spanConfig.md !== undefined) {
+                span = this._spanConfig.md;
+            } else if (this._spanConfig.sm !== undefined) {
+                span = this._spanConfig.sm;
+            } else if (this._spanConfig.md !== undefined) {
+                span = this._spanConfig.md;
+            } else if (this._spanConfig.lg !== undefined) {
+                span = this._spanConfig.lg;
+            }
+        }
+
+        const newColEnd = `span ${span}`;
+        if (this._style.gridColumnEnd !== newColEnd) {
+            this._style.gridColumnEnd = newColEnd;
+        }
+    }
+
+    protected _renderSelf(_screen: Screen): void {
+        // Pure layout container
+    }
+}
+
 /**
  * Grid — a true CSS-Grid-like layout container.
+ * Also supports responsive Col children on a 12-column grid when columns are not explicitly set.
  */
 export class Grid extends Widget {
     constructor(style: Partial<Style> = {}, options: GridOptions = {}) {
-        const columns = typeof options.columns === 'number'
-            ? Array(Math.max(1, options.columns)).fill('1fr').join(' ')
-            : options.columns;
+        // If no columns are provided, default to a 12-column grid for responsive `Col` usage.
+        const defaultColumns = options.columns === undefined ? 12 : options.columns;
+        const columns = typeof defaultColumns === 'number'
+            ? Array(Math.max(1, defaultColumns)).fill('1fr').join(' ')
+            : defaultColumns;
+            
         const rows = typeof options.rows === 'number'
             ? Array(Math.max(1, options.rows)).fill('1fr').join(' ')
             : options.rows;
@@ -44,6 +107,29 @@ export class Grid extends Widget {
             gridGap: options.gap,
             ...style
         });
+    }
+
+    override getLayoutNode(): LayoutNode {
+        let width = this.rect.width;
+        if (width <= 0) {
+            // @ts-ignore
+            width = (typeof process !== 'undefined' && process.stdout?.columns) ? process.stdout.columns : 80;
+        }
+
+        let breakpoint: 'sm' | 'md' | 'lg' = 'sm';
+        if (width >= 120) {
+            breakpoint = 'lg';
+        } else if (width >= 60) {
+            breakpoint = 'md';
+        }
+
+        for (const child of this._children) {
+            if (child instanceof Col) {
+                child.applyBreakpoint(breakpoint);
+            }
+        }
+
+        return super.getLayoutNode();
     }
 
     /** Add an item explicitly (alias for addChild) */

@@ -107,8 +107,8 @@ export { GanttChart } from './data/GanttChart.js';
 export type { GanttChartOptions, GanttTask } from './data/GanttChart.js';
 
 // ── Layout Widgets ────────────────────────────────────
-export { Grid, GridItem } from './layout/Grid.js';
-export type { GridOptions, GridItemOptions } from './layout/Grid.js';
+export { Grid, GridItem, Col } from './layout/Grid.js';
+export type { GridOptions, GridItemOptions, ColSpan, ColOptions } from './layout/Grid.js';
 export { ScrollView } from './layout/ScrollView.js';
 export type { ScrollViewOptions } from './layout/ScrollView.js';
 export { Center } from './layout/Center.js';
