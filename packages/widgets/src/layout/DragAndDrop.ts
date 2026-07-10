@@ -14,21 +14,26 @@ export const DragState = {
 export interface DraggableOptions {
     id: string;
     onDragStart?: () => void;
+    onDragEnd?: () => void;
 }
 
 export interface DroppableOptions {
     id: string;
     onDrop?: (draggedId: string) => void;
+    onDragEnter?: (draggedId: string) => void;
+    onDragLeave?: (draggedId: string) => void;
 }
 
 export class DraggableWidget extends Widget {
     private _id: string;
     private _onDragStart?: () => void;
+    private _onDragEnd?: () => void;
 
     constructor(opts: DraggableOptions) {
         super();
         this._id = opts.id;
         this._onDragStart = opts.onDragStart;
+        this._onDragEnd = opts.onDragEnd;
         this.focusable = true;
     }
 
@@ -44,6 +49,7 @@ export class DraggableWidget extends Widget {
         if (DragState.activeDragId === this._id) {
             DragState.activeDragId = null;
             DragState.isDragging = false;
+            this._onDragEnd?.();
             this.markDirty();
         }
     }
@@ -74,11 +80,15 @@ export class DraggableWidget extends Widget {
 export class DroppableWidget extends Widget {
     private _id: string;
     private _onDrop?: (draggedId: string) => void;
+    private _onDragEnter?: (draggedId: string) => void;
+    private _onDragLeave?: (draggedId: string) => void;
 
     constructor(opts: DroppableOptions) {
         super();
         this._id = opts.id;
         this._onDrop = opts.onDrop;
+        this._onDragEnter = opts.onDragEnter;
+        this._onDragLeave = opts.onDragLeave;
         this.focusable = true;
     }
 
@@ -94,6 +104,10 @@ export class DroppableWidget extends Widget {
     handleMouse(event: MouseEvent): void {
         if (event.type === 'mouseup') {
             this.handleDrop();
+        } else if (event.type === 'mouseenter' && DragState.isDragging && DragState.activeDragId) {
+            this._onDragEnter?.(DragState.activeDragId);
+        } else if (event.type === 'mouseleave' && DragState.isDragging && DragState.activeDragId) {
+            this._onDragLeave?.(DragState.activeDragId);
         }
     }
 
