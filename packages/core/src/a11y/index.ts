@@ -1,6 +1,7 @@
 export interface A11yProps {
-    role?: 'region' | 'alert' | 'status' | 'log' | 'navigation';
+    role?: 'region' | 'alert' | 'status' | 'log' | 'navigation' | 'button' | 'checkbox' | 'textbox' | string;
     label?: string;
+    ariaLabel?: string;
 }
 
 export function emitA11y(props: A11yProps | undefined, write: (data: string) => void, action: 'start' | 'end'): void {

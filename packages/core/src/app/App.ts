@@ -448,6 +448,14 @@ export class App {
                     }
                     renderInlineToTerminal(this.terminal, this.screen as any, this._options.inlineRows ?? 0);
                 } else {
+                    const focusedId = this.focus.currentId;
+                    if (focusedId) {
+                        const focusedWidget = this._widgetById.get(focusedId);
+                        if (focusedWidget && focusedWidget.rect) {
+                            const { x, y } = focusedWidget.rect;
+                            this.screen.writeAnsi(`\x1b[${y + 1};${x + 1}H`);
+                        }
+                    }
                     this.renderer.requestFrame();
                 }
             } finally {
@@ -584,6 +592,18 @@ export class App {
 
         widget.isFocused = focused;
         widget.markDirty?.();
+
+        if (focused) {
+            const a11y = widget.a11y || (widget as any)._a11y;
+            if (a11y) {
+                const role = a11y.role || '';
+                const label = a11y.ariaLabel || a11y.label || '';
+                const announcement = `${role} ${label}`.trim();
+                if (announcement) {
+                    this.screen.writeAnsi(`\x1b[8m${announcement}\x1b[0m\x07`);
+                }
+            }
+        }
         return true;
     }
 
