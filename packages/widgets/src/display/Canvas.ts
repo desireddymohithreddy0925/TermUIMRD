@@ -118,6 +118,40 @@ export class Canvas extends Widget {
     }
 
     /**
+     * Draws a filled circle.
+     */
+    public fillCircle(cx: number, cy: number, r: number): void {
+        cx = Math.floor(cx);
+        cy = Math.floor(cy);
+        r = Math.floor(r);
+
+        for (let y = -r; y <= r; y++) {
+            for (let x = -r; x <= r; x++) {
+                if (x * x + y * y <= r * r) {
+                    this.setPixel(cx + x, cy + y);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draws an unfilled rectangle.
+     */
+    public strokeRect(x: number, y: number, w: number, h: number): void {
+        x = Math.floor(x);
+        y = Math.floor(y);
+        w = Math.floor(w);
+        h = Math.floor(h);
+
+        if (w <= 0 || h <= 0) return;
+
+        this.lineTo(x, y, x + w - 1, y);
+        this.lineTo(x + w - 1, y, x + w - 1, y + h - 1);
+        this.lineTo(x + w - 1, y + h - 1, x, y + h - 1);
+        this.lineTo(x, y + h - 1, x, y);
+    }
+
+    /**
      * Draws a line from (x0, y0) to (x1, y1).
      */
     public lineTo(x0: number, y0: number, x1: number, y1: number): void {
