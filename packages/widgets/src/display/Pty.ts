@@ -84,6 +84,22 @@ export class Pty extends Widget {
         return true;
     }
 
+    /**
+     * Programmatically write text to the spawned process.
+     */
+    public write(text: string): void {
+        if (!this._process || !this._process.stdin.writable) return;
+        this._process.stdin.write(text);
+    }
+
+    /**
+     * Clear the terminal output buffer.
+     */
+    public clear(): void {
+        this._lines = [];
+        this.markDirty();
+    }
+
     protected _renderSelf(screen: Screen): void {
         const rect = this._getContentRect();
         const { x, y, width, height } = rect;
