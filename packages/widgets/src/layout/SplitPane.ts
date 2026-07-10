@@ -99,6 +99,40 @@ export class SplitPane extends Widget {
         }
     }
 
+    private _dragging = false;
+
+    handleMouse(event: import('@termuijs/core').MouseEvent): void {
+        const { x, y, width, height } = this._getContentRect();
+        
+        if (this._direction === 'horizontal') {
+            const dividerX = x + Math.floor(this._ratio * width);
+            
+            if (event.type === 'mousedown' && event.button === 'left') {
+                if (event.x === dividerX) {
+                    this._dragging = true;
+                }
+            } else if ((event.type === 'mousemove' || event.type === 'drag') && this._dragging) {
+                const newRatio = (event.x - x) / width;
+                this.setRatio(newRatio);
+            } else if (event.type === 'mouseup' || event.type === 'dragend') {
+                this._dragging = false;
+            }
+        } else {
+            const dividerY = y + Math.floor(this._ratio * height);
+            
+            if (event.type === 'mousedown' && event.button === 'left') {
+                if (event.y === dividerY) {
+                    this._dragging = true;
+                }
+            } else if ((event.type === 'mousemove' || event.type === 'drag') && this._dragging) {
+                const newRatio = (event.y - y) / height;
+                this.setRatio(newRatio);
+            } else if (event.type === 'mouseup' || event.type === 'dragend') {
+                this._dragging = false;
+            }
+        }
+    }
+
     saveLayout(): string {
         if (!this._persistent) {
             return '';
