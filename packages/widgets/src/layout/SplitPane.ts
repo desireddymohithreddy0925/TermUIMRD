@@ -103,6 +103,7 @@ export class SplitPane extends Widget {
 
     handleMouse(event: import('@termuijs/core').MouseEvent): void {
         const { x, y, width, height } = this._getContentRect();
+        if (width <= 0 || height <= 0) return;
         
         if (this._direction === 'horizontal') {
             const dividerX = x + Math.floor(this._ratio * width);
