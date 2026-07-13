@@ -168,6 +168,7 @@ export default function HomeScreen() {
 function createPackageJson(config: ProjectConfig): string {
     const isFileManager = config.template === 'file-manager';
     const isAiAssistant = config.template === 'ai-assistant';
+    const needsDataPackage = config.features.dataProviders || config.template === 'dashboard';
     return JSON.stringify({
         name: config.name,
         version: '0.1.0',
@@ -204,7 +205,7 @@ function createPackageJson(config: ProjectConfig): string {
                 '@termuijs/tss': 'latest',
                 '@termuijs/quick': 'latest',
                 '@termuijs/motion': 'latest',
-                ...(config.features.dataProviders ? { '@termuijs/data': 'latest' } : {}),
+                ...(needsDataPackage ? { '@termuijs/data': 'latest' } : {}),
                 ...(config.features.router ? { '@termuijs/router': 'latest' } : {}),
             },
         devDependencies: {
