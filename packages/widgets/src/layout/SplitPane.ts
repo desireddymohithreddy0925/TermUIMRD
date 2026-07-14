@@ -101,15 +101,22 @@ export class SplitPane extends Widget {
 
     private _dragging = false;
 
+    /**
+     * Grabbing a divider that renders exactly one cell wide is hard to hit
+     * with a mouse, so accept a click within this many cells of the
+     * rendered divider position as a valid grab.
+     */
+    private static readonly DIVIDER_HIT_TOLERANCE = 1;
+
     handleMouse(event: import('@termuijs/core').MouseEvent): void {
         const { x, y, width, height } = this._getContentRect();
         if (width <= 0 || height <= 0) return;
-        
+
         if (this._direction === 'horizontal') {
             const dividerX = x + Math.floor(this._ratio * width);
-            
+
             if (event.type === 'mousedown' && event.button === 'left') {
-                if (event.x === dividerX) {
+                if (Math.abs(event.x - dividerX) <= SplitPane.DIVIDER_HIT_TOLERANCE) {
                     this._dragging = true;
                 }
             } else if ((event.type === 'mousemove' || event.type === 'drag') && this._dragging) {
@@ -120,9 +127,9 @@ export class SplitPane extends Widget {
             }
         } else {
             const dividerY = y + Math.floor(this._ratio * height);
-            
+
             if (event.type === 'mousedown' && event.button === 'left') {
-                if (event.y === dividerY) {
+                if (Math.abs(event.y - dividerY) <= SplitPane.DIVIDER_HIT_TOLERANCE) {
                     this._dragging = true;
                 }
             } else if ((event.type === 'mousemove' || event.type === 'drag') && this._dragging) {
