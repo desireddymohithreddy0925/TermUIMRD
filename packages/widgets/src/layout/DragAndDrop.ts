@@ -6,15 +6,15 @@ import { type Screen, type KeyEvent, type MouseEvent } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 
 // ── Drag State Manager ──
+// onDragEnd is set by the draggable when its drag starts, so a droppable can
+// fire the dragged widget's lifecycle hook on a successful drop. Only one drag
+// is ever active, so this is a single slot, not a registry keyed by widget id
+// (a registry would retain every draggable ever constructed).
 export const DragState = {
     activeDragId: null as string | null,
     isDragging: false,
+    onDragEnd: null as (() => void) | null,
 };
-
-// Registry of active draggables' onDragEnd callbacks, keyed by id. This lets
-// DroppableWidget notify the dragged widget's lifecycle hook on a successful
-// drop, using the same `onDragEnd` callback that cancelDrag() already invokes.
-const dragEndCallbacks = new Map<string, () => void>();
 
 export interface DraggableOptions {
     id: string;
@@ -40,13 +40,13 @@ export class DraggableWidget extends Widget {
         this._onDragStart = opts.onDragStart;
         this._onDragEnd = opts.onDragEnd;
         this.focusable = true;
-        dragEndCallbacks.set(this._id, () => this._onDragEnd?.());
     }
 
     private startDrag() {
         if (DragState.isDragging && DragState.activeDragId === this._id) return;
         DragState.activeDragId = this._id;
         DragState.isDragging = true;
+        DragState.onDragEnd = () => this._onDragEnd?.();
         this._onDragStart?.();
         this.markDirty();
     }
@@ -55,6 +55,7 @@ export class DraggableWidget extends Widget {
         if (DragState.activeDragId === this._id) {
             DragState.activeDragId = null;
             DragState.isDragging = false;
+            DragState.onDragEnd = null;
             this._onDragEnd?.();
             this.markDirty();
         }
@@ -101,10 +102,12 @@ export class DroppableWidget extends Widget {
     private handleDrop() {
         if (DragState.isDragging && DragState.activeDragId !== null) {
             const draggedId = DragState.activeDragId;
+            const onDragEnd = DragState.onDragEnd;
             this._onDrop?.(draggedId);
-            dragEndCallbacks.get(draggedId)?.();
+            onDragEnd?.();
             DragState.activeDragId = null;
             DragState.isDragging = false;
+            DragState.onDragEnd = null;
             this.markDirty();
         }
     }
