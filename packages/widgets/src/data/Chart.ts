@@ -2,7 +2,7 @@
 // @termuijs/widgets — Chart widget
 // ─────────────────────────────────────────────────────
 
-import { type Screen, type Style, type Color, styleToCellAttrs, caps } from '@termuijs/core';
+import { type Screen, type Style, type Color, styleToCellAttrs, stringWidth, parseColor, caps } from '@termuijs/core';
 import { Widget } from '../base/Widget.js';
 import { BrailleCanvas } from './BrailleCanvas.js';
 
@@ -73,7 +73,7 @@ export class Chart extends Widget {
         
         // If axes are shown, reserve space for Y-axis (labels + tick) and X-axis (line)
         if (this._showAxes) {
-            const yAxisLabelWidth = Math.max(maxStr.length, minStr.length) + 1; // +1 for the tick mark e.g. '┤'
+            const yAxisLabelWidth = Math.max(stringWidth(maxStr), stringWidth(minStr)) + 1; // +1 for the tick mark e.g. '┤'
             chartX = x + yAxisLabelWidth;
             chartWidth = width - yAxisLabelWidth;
             chartHeight = height - 1; // Reserve bottom row for X-axis
@@ -110,7 +110,7 @@ export class Chart extends Widget {
         const scaleX = maxDataLength > 1 ? (canvasWidth - 1) / (maxDataLength - 1) : 0;
 
         for (const series of this._series) {
-            const seriesColor = typeof series.color === 'string' ? { type: 'named' as const, name: series.color as any } : series.color;
+            const seriesColor = typeof series.color === 'string' ? parseColor(series.color) : series.color;
 
             let prevPx = -1;
             let prevPy = -1;
@@ -166,9 +166,9 @@ export class Chart extends Widget {
             for (let i = this._series.length - 1; i >= 0; i--) {
                 const s = this._series[i];
                 const label = ` ■ ${s.label} `;
-                legendX -= label.length;
+                legendX -= stringWidth(label);
                 if (legendX < chartX) break; // Doesn't fit
-                const color = typeof s.color === 'string' ? { type: 'named' as const, name: s.color as any } : s.color;
+                const color = typeof s.color === 'string' ? parseColor(s.color) : s.color;
                 
                 // Print the square in color
                 screen.writeString(legendX, y, ' ■ ', { ...attrs, fg: color });
