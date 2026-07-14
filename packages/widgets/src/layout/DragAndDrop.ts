@@ -11,6 +11,11 @@ export const DragState = {
     isDragging: false,
 };
 
+// Registry of active draggables' onDragEnd callbacks, keyed by id. This lets
+// DroppableWidget notify the dragged widget's lifecycle hook on a successful
+// drop, using the same `onDragEnd` callback that cancelDrag() already invokes.
+const dragEndCallbacks = new Map<string, () => void>();
+
 export interface DraggableOptions {
     id: string;
     onDragStart?: () => void;
@@ -35,6 +40,7 @@ export class DraggableWidget extends Widget {
         this._onDragStart = opts.onDragStart;
         this._onDragEnd = opts.onDragEnd;
         this.focusable = true;
+        dragEndCallbacks.set(this._id, () => this._onDragEnd?.());
     }
 
     private startDrag() {
@@ -94,7 +100,9 @@ export class DroppableWidget extends Widget {
 
     private handleDrop() {
         if (DragState.isDragging && DragState.activeDragId !== null) {
-            this._onDrop?.(DragState.activeDragId);
+            const draggedId = DragState.activeDragId;
+            this._onDrop?.(draggedId);
+            dragEndCallbacks.get(draggedId)?.();
             DragState.activeDragId = null;
             DragState.isDragging = false;
             this.markDirty();
