@@ -35,6 +35,8 @@ export type { FPSCounterOptions } from './display/FPSCounter.js';
 export { Pty } from './display/Pty.js';
 export type { PtyOptions } from './display/Pty.js';
 export { PerformanceOverlay } from './display/PerformanceOverlay.js';
+export { Image } from './display/Image.js';
+export type { ImageOptions } from './display/Image.js';
 
 // ── Virtual Scroll Helpers ────────────────────────────
 export { computeRange, computeVariableRange } from './input/virtual-scroll.js';
@@ -308,3 +310,5 @@ export { UnorderedList } from './display/UnorderedList.js';
 export type { UnorderedListOptions } from './display/UnorderedList.js';
 export { Rule } from './display/Rule.js';
 export type { RuleOrientation, RuleOptions } from './display/Rule.js';
+export { WorldMap } from './data/WorldMap.js';
+export type { WorldMapOptions, MapMarker } from './data/WorldMap.js';
