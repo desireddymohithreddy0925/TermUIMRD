@@ -951,23 +951,22 @@ describe('useStore selector memoization', () => {
 })
 
 describe('persist – symlink resolution', () => {
-    const testRoot = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'termuijs-symtest-')));
-    const storeDir = path.join(testRoot, 'termuijs-stores');
+    let appConfig = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
+    if (process.platform === 'win32') appConfig = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
+    if (process.platform === 'darwin') appConfig = path.join(os.homedir(), 'Library', 'Application Support');
+
+    const testRoot = path.join(appConfig, 'termuijs-stores', 'temp-symtest-store-dir');
+    const storeDir = testRoot;
     const realDir = path.join(storeDir, 'real');
     const linkDir = path.join(storeDir, 'link');
 
     afterAll(() => {
-        try { fs.rmSync(storeDir, { recursive: true }); } catch { /* ok */ }
-        try { fs.rmdirSync(testRoot); } catch { /* ok */ }
+        try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
     });
 
-    const origAppData = process.env.APPDATA;
-    const origXdgConfig = process.env.XDG_CONFIG_HOME;
     const symlinkType: any = process.platform === 'win32' ? 'junction' : 'dir';
 
     beforeEach(() => {
-        process.env.APPDATA = testRoot;
-        process.env.XDG_CONFIG_HOME = testRoot;
         fs.mkdirSync(realDir, { recursive: true });
         try { fs.rmdirSync(linkDir); } catch { /* ok */ }
         if (!fs.existsSync(linkDir)) {
@@ -976,10 +975,8 @@ describe('persist – symlink resolution', () => {
     });
 
     afterEach(() => {
-        process.env.APPDATA = origAppData;
-        process.env.XDG_CONFIG_HOME = origXdgConfig;
         vi.useRealTimers();
-        try { fs.rmSync(storeDir, { recursive: true }); } catch { /* ok */ }
+        try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
     });
 
     it('resolves symlinks in persist path and writes to real directory', () => {
