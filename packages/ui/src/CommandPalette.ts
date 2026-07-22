@@ -205,16 +205,35 @@ for (const [category, commands] of grouped) {
         let screenX = bx + 1;
         const screenY = by + 3 + rowOffset;
         const chars = splitGraphemes(labelStr);
+        let currentSegment = '';
+        let wasMatch = matchIndices.has(0);
+
         for (let i = 0; i < chars.length; i++) {
             const ch = chars[i];
             const isMatch = matchIndices.has(i);
-            screen.writeString(screenX, screenY, ch, {
+            
+            if (isMatch !== wasMatch && currentSegment.length > 0) {
+                screen.writeString(screenX, screenY, currentSegment, {
+                    ...attrs,
+                    fg: (active || wasMatch) ? this._activeColor : attrs.fg,
+                    bold: active || wasMatch,
+                    underline: wasMatch && !active
+                });
+                screenX += stringWidth(currentSegment);
+                currentSegment = ch;
+                wasMatch = isMatch;
+            } else {
+                currentSegment += ch;
+            }
+        }
+        
+        if (currentSegment.length > 0) {
+            screen.writeString(screenX, screenY, currentSegment, {
                 ...attrs,
-                fg: (active || isMatch) ? this._activeColor : attrs.fg,
-                bold: active || isMatch,
-                underline: isMatch && !active
+                fg: (active || wasMatch) ? this._activeColor : attrs.fg,
+                bold: active || wasMatch,
+                underline: wasMatch && !active
             });
-            screenX += stringWidth(ch);
         }
 
         rowOffset++;
