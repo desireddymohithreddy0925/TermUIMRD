@@ -13,7 +13,7 @@ export interface SpectrumVisualizerOptions {
     maxVal?: number;
 }
 
-const UNICODE_BLOCKS = [' ', ' ', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+const UNICODE_BLOCKS = [' ', '\u2581', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
 /**
  * SpectrumVisualizer — audio spectrum or frequency data visualizer
@@ -27,7 +27,7 @@ export class SpectrumVisualizer extends Widget {
 
     constructor(style: Partial<Style> = {}, opts: SpectrumVisualizerOptions = {}) {
         super(style);
-        this._data = opts.data ?? [];
+        this._data = [...(opts.data ?? [])];
         this._barWidth = opts.barWidth ?? 2;
         this._gap = opts.gap ?? 1;
         this._colorGradient = opts.colorGradient;
