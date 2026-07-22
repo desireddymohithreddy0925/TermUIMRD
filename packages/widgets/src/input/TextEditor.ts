@@ -322,7 +322,7 @@ export class TextEditor extends Widget {
                 case 'keyword': return { type: 'named', name: 'magenta' };
                 case 'string': return { type: 'named', name: 'yellow' };
                 case 'number': return { type: 'named', name: 'cyan' };
-                case 'comment': return { type: 'named', name: 'gray' };
+                case 'comment': return { type: 'named', name: 'brightBlack' };
                 case 'punctuation': return { type: 'named', name: 'white' };
                 default: return { type: 'named', name: 'white' };
             }
