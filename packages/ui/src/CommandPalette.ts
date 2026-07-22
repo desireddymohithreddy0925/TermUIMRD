@@ -125,11 +125,16 @@ export class CommandPalette extends Widget {
     }
 
     private _filter(): void {
-        const q = this._query.toLowerCase();
-        if (!q) { this._filtered = [...this._commands]; } else {
+        const q = splitGraphemes(this._query.toLowerCase());
+        if (q.length === 0) { this._filtered = [...this._commands]; } else {
             this._filtered = this._commands.filter(c => { 
-                const l =
-    `${c.label} ${c.category ?? ''}`.toLowerCase(); let qi = 0; for (let i = 0; i < l.length && qi < q.length; i++) { if (l[i] === q[qi]) qi++; } return qi === q.length; });
+                const l = splitGraphemes(c.label.toLowerCase());
+                let qi = 0; 
+                for (let i = 0; i < l.length && qi < q.length; i++) { 
+                    if (l[i] === q[qi]) qi++; 
+                } 
+                return qi === q.length; 
+            });
         }
         this._selectedIndex = 0;
     }
@@ -185,18 +190,36 @@ for (const [category, commands] of grouped) {
         const active = rowOffset - 1 === this._selectedIndex;
         const prefix = active ? (caps.unicode ? '❯ ' : '> ') : '  ';
         const shortcutStr = c.shortcut ? `  ${c.shortcut}` : '';
-        const labelFull = prefix + c.label + shortcutStr;
-        const labelStr = labelFull.slice(0, bw - 4).padEnd(bw - 4);
+        const maxW = bw - 4;
+        
+        let w = 0;
+        const prefixG = splitGraphemes(prefix);
+        const labelG = splitGraphemes(c.label);
+        const shortcutG = splitGraphemes(shortcutStr);
+        const allG = [...prefixG, ...labelG, ...shortcutG];
+        const chars: string[] = [];
+        
+        for (const g of allG) {
+            const gw = stringWidth(g);
+            if (w + gw > maxW) {
+                break;
+            }
+            chars.push(g);
+            w += gw;
+        }
+        while (w < maxW) {
+            chars.push(' ');
+            w += 1;
+        }
 
         // Find fuzzy match indices to highlight
         const matchIndices = new Set<number>();
-        const q = this._query.toLowerCase();
-        if (q) {
-            const l = c.label.toLowerCase();
+        const q = splitGraphemes(this._query.toLowerCase());
+        if (q.length > 0) {
             let qi = 0;
-            for (let i = 0; i < l.length && qi < q.length; i++) {
-                if (l[i] === q[qi]) {
-                    matchIndices.add(i + prefix.length);
+            for (let i = 0; i < labelG.length && qi < q.length; i++) {
+                if (labelG[i].toLowerCase() === q[qi]) {
+                    matchIndices.add(prefixG.length + i);
                     qi++;
                 }
             }
@@ -204,7 +227,6 @@ for (const [category, commands] of grouped) {
 
         let screenX = bx + 1;
         const screenY = by + 3 + rowOffset;
-        const chars = splitGraphemes(labelStr);
         let currentSegment = '';
         let wasMatch = matchIndices.has(0);
 
