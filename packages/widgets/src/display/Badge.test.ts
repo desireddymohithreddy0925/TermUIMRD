@@ -78,8 +78,7 @@ describe('Badge', () => {
 
     // ── 3. ASCII fallback ────────────────────────────────────────────────
     it('uses ASCII border chars when caps.unicode is false', () => {
-        const orig = caps.unicode;
-        (caps as any).unicode = false;
+        vi.spyOn(caps, 'unicode', 'get').mockReturnValue(false);
         try {
             const { screen } = renderBadge('test');
             // ASCII corners should be +
@@ -90,7 +89,7 @@ describe('Badge', () => {
             // Vertical border should be |
             expect(screen.back[1][0].char).toBe('|');
         } finally {
-            (caps as any).unicode = orig;
+            vi.restoreAllMocks();
         }
     });
 
