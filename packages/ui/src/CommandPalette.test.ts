@@ -293,7 +293,7 @@ describe('CommandPalette', () => {
             // 'of' is a fuzzy match for 'Open File' and 'Close File'
             palette.handleKey(makeKey('o') as any);
             palette.handleKey(makeKey('f') as any);
-            const filtered: Command[] = (palette as any)._filtered;
+            const filtered: Command[] = (palette as any)._filtered.map((item: any) => item.cmd);
             expect(filtered.some(c => c.id === 'open')).toBe(true);
         });
 
@@ -378,7 +378,7 @@ describe('CommandPalette', () => {
             palette.show();
             palette.insertChar('o');
             palette.insertChar('f');
-            const filtered: Command[] = (palette as any)._filtered;
+            const filtered: Command[] = (palette as any)._filtered.map((item: any) => item.cmd);
             expect(filtered.some(c => c.id === 'open')).toBe(true);
         });
 
@@ -387,7 +387,7 @@ describe('CommandPalette', () => {
             palette.show();
             palette.insertChar('c');
             palette.insertChar('f');
-            const filtered: Command[] = (palette as any)._filtered;
+            const filtered: Command[] = (palette as any)._filtered.map((item: any) => item.cmd);
             expect(filtered.some(c => c.id === 'close')).toBe(true);
         });
 
@@ -398,7 +398,7 @@ describe('CommandPalette', () => {
             palette.insertChar('s');
             palette.insertChar('e');
             palette.insertChar('t');
-            const filtered: Command[] = (palette as any)._filtered;
+            const filtered: Command[] = (palette as any)._filtered.map((item: any) => item.cmd);
             expect(filtered.some(c => c.id === 'settings')).toBe(true);
             // 'Open File' and 'Close File' should not match 'set'
             expect(filtered.some(c => c.id === 'open')).toBe(false);
@@ -416,7 +416,7 @@ describe('CommandPalette', () => {
             palette.show();
             palette.insertChar('O');
             palette.insertChar('F');
-            const filtered: Command[] = (palette as any)._filtered;
+            const filtered: Command[] = (palette as any)._filtered.map((item: any) => item.cmd);
             expect(filtered.some(c => c.id === 'open')).toBe(true);
         });
     });

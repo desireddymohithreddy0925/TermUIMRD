@@ -7,7 +7,7 @@ export interface CommandPaletteOptions { placeholder?: string; borderColor?: Sty
 
 export class CommandPalette extends Widget {
     private _commands: Command[];
-    private _filtered: Command[] = [];
+    private _filtered: { cmd: Command; labelIndices: number[] }[] = [];
     private _query = '';
     private _cursorPos = 0;
     private _selectedIndex = 0;
@@ -21,7 +21,7 @@ export class CommandPalette extends Widget {
     constructor(commands: Command[], options: CommandPaletteOptions = {}) {
         super(mergeStyles(defaultStyle(), {}));
         this._commands = commands;
-        this._filtered = [...commands];
+        this._filtered = commands.map(cmd => ({ cmd, labelIndices: [] }));
         this._placeholder = options.placeholder ?? 'Type a command...';
         this._borderColor = options.borderColor ?? { type: 'named', name: 'cyan' };
         this._activeColor = options.activeColor ?? { type: 'named', name: 'cyan' };
@@ -29,7 +29,7 @@ export class CommandPalette extends Widget {
     }
 
     get visible(): boolean { return this._visible; }
-    show(): void { this._visible = true; this._query = ''; this._cursorPos = 0; this._selectedIndex = 0; this._filtered = [...this._commands]; this.markDirty(); }
+    show(): void { this._visible = true; this._query = ''; this._cursorPos = 0; this._selectedIndex = 0; this._filtered = this._commands.map(cmd => ({ cmd, labelIndices: [] })); this.markDirty(); }
     hide(): void { this._visible = false; this.markDirty(); }
     toggle(): void { this._visible ? this.hide() : this.show(); }
     insertChar(ch: string): void {
@@ -52,7 +52,7 @@ export class CommandPalette extends Widget {
     }
     selectNext(): void { if (this._selectedIndex < this._filtered.length - 1) { this._selectedIndex++; this.markDirty(); } }
     selectPrev(): void { if (this._selectedIndex > 0) { this._selectedIndex--; this.markDirty(); } }
-    confirm(): void { const c = this._filtered[this._selectedIndex]; if (c) { this.hide(); c.action(); } }
+    confirm(): void { const c = this._filtered[this._selectedIndex]; if (c) { this.hide(); c.cmd.action(); } }
 
     /**
      * Handle a KeyEvent from @termuijs/core.
@@ -124,12 +124,48 @@ export class CommandPalette extends Widget {
         }
     }
 
+    private _fuzzyMatch(query: string, label: string, category: string): { matches: boolean, labelIndices: number[] } {
+        if (!query) return { matches: true, labelIndices: [] };
+        const q = splitGraphemes(query.toLowerCase());
+        const labelG = splitGraphemes(label.toLowerCase());
+        const catG = splitGraphemes(category.toLowerCase());
+        
+        let qi = 0;
+        const labelIndices: number[] = [];
+        
+        // Check label
+        for (let i = 0; i < labelG.length && qi < q.length; i++) {
+            if (labelG[i] === q[qi]) {
+                labelIndices.push(i);
+                qi++;
+            }
+        }
+        
+        // Check space
+        if (qi < q.length && q[qi] === ' ') qi++;
+        
+        // Check category
+        for (let i = 0; i < catG.length && qi < q.length; i++) {
+            if (catG[i] === q[qi]) {
+                qi++;
+            }
+        }
+        
+        return { matches: qi === q.length, labelIndices };
+    }
+
     private _filter(): void {
-        const q = this._query.toLowerCase();
-        if (!q) { this._filtered = [...this._commands]; } else {
-            this._filtered = this._commands.filter(c => { 
-                const l =
-    `${c.label} ${c.category ?? ''}`.toLowerCase(); let qi = 0; for (let i = 0; i < l.length && qi < q.length; i++) { if (l[i] === q[qi]) qi++; } return qi === q.length; });
+        const q = this._query;
+        if (!q) { 
+            this._filtered = this._commands.map(cmd => ({ cmd, labelIndices: [] })); 
+        } else {
+            this._filtered = [];
+            for (const cmd of this._commands) {
+                const res = this._fuzzyMatch(q, cmd.label, cmd.category ?? '');
+                if (res.matches) {
+                    this._filtered.push({ cmd, labelIndices: res.labelIndices });
+                }
+            }
         }
         this._selectedIndex = 0;
     }
@@ -143,13 +179,13 @@ export class CommandPalette extends Widget {
         for (let r = 0; r < height; r++) screen.writeString(x, y + r, backdropCh.repeat(width), { ...attrs, dim: true });
         // Box
         const vis = this._filtered.slice(0, this._maxVisible);
-        const grouped = new Map<string, Command[]>();
-        for (const cmd of vis) {
-            const category = cmd.category ?? 'General';
+        const grouped = new Map<string, { cmd: Command; labelIndices: number[] }[]>();
+        for (const item of vis) {
+            const category = item.cmd.category ?? 'General';
             if (!grouped.has(category)) {
                 grouped.set(category, []);
             }
-            grouped.get(category)!.push(cmd);
+            grouped.get(category)!.push(item);
         }
         const bw = Math.min(60, width - 4);
         const totalVisRows = grouped.size + vis.length;
@@ -171,7 +207,7 @@ export class CommandPalette extends Widget {
         // Items
         let rowOffset = 0;
 
-for (const [category, commands] of grouped) {
+for (const [category, items] of grouped) {
     screen.writeString(
         bx + 1,
         by + 3 + rowOffset,
@@ -181,24 +217,59 @@ for (const [category, commands] of grouped) {
 
     rowOffset++;
 
-    for (const c of commands) {
+    for (const item of items) {
+        const c = item.cmd;
         const active = rowOffset - 1 === this._selectedIndex;
+        const matchSet = new Set(item.labelIndices);
 
         const prefix = active ? (caps.unicode ? '❯ ' : '> ') : '  ';
         const shortcutStr = c.shortcut ? `  ${c.shortcut}` : '';
-        const labelFull = prefix + c.label + shortcutStr;
-        const label = labelFull.slice(0, bw - 4).padEnd(bw - 4);
+        const maxLabelWidth = bw - 4 - stringWidth(prefix) - stringWidth(shortcutStr);
+        
+        let cursorX = bx + 1;
 
-        screen.writeString(
-            bx + 1,
-            by + 3 + rowOffset,
-            label,
-            {
+        // Write prefix
+        screen.writeString(cursorX, by + 3 + rowOffset, prefix, {
+            ...attrs,
+            fg: active ? this._activeColor : attrs.fg,
+            bold: active,
+        });
+        cursorX += stringWidth(prefix);
+
+        // Write label with fuzzy highlighting
+        const graphemes = splitGraphemes(c.label);
+        let labelWidth = 0;
+        
+        for (let i = 0; i < graphemes.length; i++) {
+            const char = graphemes[i];
+            const chW = stringWidth(char);
+            if (labelWidth + chW > maxLabelWidth) break;
+            
+            const isMatch = matchSet.has(i);
+            screen.setCell(cursorX, by + 3 + rowOffset, {
+                ...attrs,
+                char: char || ' ',
+                fg: isMatch ? this._activeColor : (active ? this._activeColor : attrs.fg),
+                bold: active || isMatch,
+            });
+            cursorX += chW;
+            labelWidth += chW;
+        }
+
+        // Pad remainder of label space
+        if (labelWidth < maxLabelWidth) {
+            screen.writeString(cursorX, by + 3 + rowOffset, ' '.repeat(maxLabelWidth - labelWidth), attrs);
+            cursorX += maxLabelWidth - labelWidth;
+        }
+
+        // Write shortcut
+        if (shortcutStr) {
+            screen.writeString(cursorX, by + 3 + rowOffset, shortcutStr, {
                 ...attrs,
                 fg: active ? this._activeColor : attrs.fg,
                 bold: active,
-            }
-        );
+            });
+        }
 
         rowOffset++;
     }
