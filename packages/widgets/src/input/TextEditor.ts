@@ -7,6 +7,7 @@ import {
     type Style,
     type Color,
     type KeyEvent,
+    caps,
     styleToCellAttrs,
     splitGraphemes,
     stringWidth,
@@ -92,7 +93,7 @@ export class TextEditor extends Widget {
                     this._moveCursor(this._cursor.line - 1, prevLineLen);
                 }
                 break;
-            case 'right':
+            case 'right': {
                 const currLineLen = splitGraphemes(this._lines[this._cursor.line]).length;
                 if (this._cursor.col < currLineLen) {
                     this._moveCursor(this._cursor.line, this._cursor.col + 1);
@@ -100,6 +101,7 @@ export class TextEditor extends Widget {
                     this._moveCursor(this._cursor.line + 1, 0);
                 }
                 break;
+            }
             case 'home':
                 this._moveCursor(this._cursor.line, 0);
                 break;
@@ -115,6 +117,9 @@ export class TextEditor extends Widget {
             case 'enter':
             case 'return':
                 this._insertNewLine();
+                break;
+            case 'space':
+                this._insertChar(' ');
                 break;
             case 'backspace':
                 this._deleteBack();
@@ -212,14 +217,18 @@ export class TextEditor extends Widget {
         
         if (this._cursor.line < this._scrollOffset.line) {
             this._scrollOffset.line = this._cursor.line;
+            this.markDirty();
         } else if (this._cursor.line >= this._scrollOffset.line + height) {
             this._scrollOffset.line = this._cursor.line - height + 1;
+            this.markDirty();
         }
 
         if (this._cursor.col < this._scrollOffset.col) {
             this._scrollOffset.col = this._cursor.col;
+            this.markDirty();
         } else if (this._cursor.col >= this._scrollOffset.col + visibleWidth) {
             this._scrollOffset.col = this._cursor.col - visibleWidth + 1;
+            this.markDirty();
         }
     }
 
@@ -352,7 +361,8 @@ export class TextEditor extends Widget {
             
             // Draw gutter
             if (this._lineNumbers) {
-                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + ' │';
+                const sep = caps.unicode ? '│' : '|';
+                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + ` ${sep}`;
                 screen.writeString(x, y + row, lineNumStr, { ...attrs, dim: true });
             }
 
