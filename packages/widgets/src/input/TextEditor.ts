@@ -118,6 +118,9 @@ export class TextEditor extends Widget {
             case 'return':
                 this._insertNewLine();
                 break;
+            case 'space':
+                this._insertChar(' ');
+                break;
             case 'backspace':
                 this._deleteBack();
                 break;
@@ -214,14 +217,18 @@ export class TextEditor extends Widget {
         
         if (this._cursor.line < this._scrollOffset.line) {
             this._scrollOffset.line = this._cursor.line;
+            this.markDirty();
         } else if (this._cursor.line >= this._scrollOffset.line + height) {
             this._scrollOffset.line = this._cursor.line - height + 1;
+            this.markDirty();
         }
 
         if (this._cursor.col < this._scrollOffset.col) {
             this._scrollOffset.col = this._cursor.col;
+            this.markDirty();
         } else if (this._cursor.col >= this._scrollOffset.col + visibleWidth) {
             this._scrollOffset.col = this._cursor.col - visibleWidth + 1;
+            this.markDirty();
         }
     }
 
@@ -354,8 +361,8 @@ export class TextEditor extends Widget {
             
             // Draw gutter
             if (this._lineNumbers) {
-                const separator = caps.unicode ? ' │' : ' |';
-                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + separator;
+                const sep = caps.unicode ? '│' : '|';
+                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + ` ${sep}`;
                 screen.writeString(x, y + row, lineNumStr, { ...attrs, dim: true });
             }
 

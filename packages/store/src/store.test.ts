@@ -955,18 +955,20 @@ describe('persist – symlink resolution', () => {
     if (process.platform === 'win32') appConfig = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
     if (process.platform === 'darwin') appConfig = path.join(os.homedir(), 'Library', 'Application Support');
 
-    const testRoot = path.join(appConfig, 'termuijs-stores', 'temp-symtest-store-dir');
-    const storeDir = testRoot;
-    const realDir = path.join(storeDir, 'real');
-    const linkDir = path.join(storeDir, 'link');
-
-    afterAll(() => {
-        try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
-    });
-
+    const storesDir = path.join(appConfig, 'termuijs-stores');
+    let testRoot = '';
+    let storeDir = '';
+    let realDir = '';
+    let linkDir = '';
     const symlinkType: any = process.platform === 'win32' ? 'junction' : 'dir';
 
     beforeEach(() => {
+        fs.mkdirSync(storesDir, { recursive: true });
+        testRoot = fs.realpathSync(fs.mkdtempSync(path.join(storesDir, 'symtest-')));
+        storeDir = testRoot;
+        realDir = path.join(storeDir, 'real');
+        linkDir = path.join(storeDir, 'link');
+
         fs.mkdirSync(realDir, { recursive: true });
         try { fs.rmdirSync(linkDir); } catch { /* ok */ }
         if (!fs.existsSync(linkDir)) {
@@ -976,7 +978,9 @@ describe('persist – symlink resolution', () => {
 
     afterEach(() => {
         vi.useRealTimers();
-        try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
+        if (testRoot) {
+            try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
+        }
     });
 
     it('resolves symlinks in persist path and writes to real directory', () => {

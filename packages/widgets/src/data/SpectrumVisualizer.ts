@@ -29,9 +29,12 @@ export class SpectrumVisualizer extends Widget {
         super(style);
         this._data = [...(opts.data ?? [])];
         this._barWidth = opts.barWidth ?? 2;
+        if (this._barWidth < 1 || !Number.isInteger(this._barWidth)) this._barWidth = 1;
         this._gap = opts.gap ?? 1;
+        if (this._gap < 0 || !Number.isInteger(this._gap)) this._gap = 0;
         this._colorGradient = opts.colorGradient;
         this._maxVal = opts.maxVal ?? 255;
+        if (this._maxVal <= 0 || !Number.isFinite(this._maxVal)) this._maxVal = 255;
     }
 
     setData(data: number[]): void {
