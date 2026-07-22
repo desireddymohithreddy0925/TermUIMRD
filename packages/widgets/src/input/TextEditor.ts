@@ -46,7 +46,7 @@ export class TextEditor extends Widget {
     private _theme: string;
     private _onChange?: (value: string) => void;
 
-    constructor(opts: TextEditorOptions = {}, style: Partial<Style> = {}) {
+    constructor(style: Partial<Style> = {}, opts: TextEditorOptions = {}) {
         super(style);
         this.focusable = true;
         
