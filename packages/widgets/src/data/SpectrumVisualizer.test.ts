@@ -97,7 +97,7 @@ describe('SpectrumVisualizer', () => {
     it('updates data and marks dirty', () => {
         const viz = new SpectrumVisualizer();
         expect(viz.isDirty).toBe(true); // initially dirty
-        viz.isDirty = false;
+        viz.clearDirty();
 
         viz.setData([1, 2, 3]);
         expect(viz.isDirty).toBe(true); // should be marked dirty
