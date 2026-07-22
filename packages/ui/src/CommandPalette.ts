@@ -1,6 +1,6 @@
 // CommandPalette — fuzzy-search command launcher
 import { Widget } from '@termuijs/widgets';
-import { type Style, type Screen, type KeyEvent, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars, caps, splitGraphemes } from '@termuijs/core';
+import { type Style, type Screen, type KeyEvent, mergeStyles, defaultStyle, styleToCellAttrs, getBorderChars, caps, splitGraphemes, stringWidth } from '@termuijs/core';
 
 export interface Command { id: string; label: string; shortcut?: string; action: () => void; category?: string; }
 export interface CommandPaletteOptions { placeholder?: string; borderColor?: Style['fg']; activeColor?: Style['fg']; maxVisible?: number; }
@@ -183,22 +183,39 @@ for (const [category, commands] of grouped) {
 
     for (const c of commands) {
         const active = rowOffset - 1 === this._selectedIndex;
-
         const prefix = active ? (caps.unicode ? '❯ ' : '> ') : '  ';
         const shortcutStr = c.shortcut ? `  ${c.shortcut}` : '';
         const labelFull = prefix + c.label + shortcutStr;
-        const label = labelFull.slice(0, bw - 4).padEnd(bw - 4);
+        const labelStr = labelFull.slice(0, bw - 4).padEnd(bw - 4);
 
-        screen.writeString(
-            bx + 1,
-            by + 3 + rowOffset,
-            label,
-            {
-                ...attrs,
-                fg: active ? this._activeColor : attrs.fg,
-                bold: active,
+        // Find fuzzy match indices to highlight
+        const matchIndices = new Set<number>();
+        const q = this._query.toLowerCase();
+        if (q) {
+            const l = c.label.toLowerCase();
+            let qi = 0;
+            for (let i = 0; i < l.length && qi < q.length; i++) {
+                if (l[i] === q[qi]) {
+                    matchIndices.add(i + prefix.length);
+                    qi++;
+                }
             }
-        );
+        }
+
+        let screenX = bx + 1;
+        const screenY = by + 3 + rowOffset;
+        const chars = splitGraphemes(labelStr);
+        for (let i = 0; i < chars.length; i++) {
+            const ch = chars[i];
+            const isMatch = matchIndices.has(i);
+            screen.writeString(screenX, screenY, ch, {
+                ...attrs,
+                fg: (active || isMatch) ? this._activeColor : attrs.fg,
+                bold: active || isMatch,
+                underline: isMatch && !active
+            });
+            screenX += stringWidth(ch);
+        }
 
         rowOffset++;
     }
