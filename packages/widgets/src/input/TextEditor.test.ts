@@ -8,7 +8,7 @@ describe('TextEditor', () => {
 
     beforeEach(() => {
         screen = new Screen(80, 24);
-        editor = new TextEditor({}, { content: 'const a = 1;\nlet b = 2;' });
+        editor = new TextEditor({ content: 'const a = 1;\nlet b = 2;' });
         editor.updateRect({ x: 0, y: 0, width: 80, height: 10 });
     });
 
@@ -63,7 +63,7 @@ describe('TextEditor', () => {
     });
 
     it('respects lineNumbers and renders gutter', () => {
-        editor = new TextEditor({}, { content: 'line 1\nline 2', lineNumbers: true });
+        editor = new TextEditor({ content: 'line 1\nline 2', lineNumbers: true });
         editor.updateRect({ x: 0, y: 0, width: 80, height: 10 });
         editor.render(screen);
         

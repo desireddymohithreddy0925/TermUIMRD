@@ -7,6 +7,7 @@ import {
     type Style,
     type Color,
     type KeyEvent,
+    caps,
     styleToCellAttrs,
     splitGraphemes,
     stringWidth,
@@ -45,7 +46,7 @@ export class TextEditor extends Widget {
     private _theme: string;
     private _onChange?: (value: string) => void;
 
-    constructor(style: Partial<Style> = {}, opts: TextEditorOptions = {}) {
+    constructor(opts: TextEditorOptions = {}, style: Partial<Style> = {}) {
         super(style);
         this.focusable = true;
         
@@ -92,7 +93,7 @@ export class TextEditor extends Widget {
                     this._moveCursor(this._cursor.line - 1, prevLineLen);
                 }
                 break;
-            case 'right':
+            case 'right': {
                 const currLineLen = splitGraphemes(this._lines[this._cursor.line]).length;
                 if (this._cursor.col < currLineLen) {
                     this._moveCursor(this._cursor.line, this._cursor.col + 1);
@@ -100,6 +101,7 @@ export class TextEditor extends Widget {
                     this._moveCursor(this._cursor.line + 1, 0);
                 }
                 break;
+            }
             case 'home':
                 this._moveCursor(this._cursor.line, 0);
                 break;
@@ -352,7 +354,8 @@ export class TextEditor extends Widget {
             
             // Draw gutter
             if (this._lineNumbers) {
-                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + ' │';
+                const separator = caps.unicode ? ' │' : ' |';
+                const lineNumStr = String(lineIdx + 1).padStart(gutterWidth - 2, ' ') + separator;
                 screen.writeString(x, y + row, lineNumStr, { ...attrs, dim: true });
             }
 
@@ -370,7 +373,7 @@ export class TextEditor extends Widget {
                     if (currentCol >= this._scrollOffset.col && currentCol < this._scrollOffset.col + maxVisibleWidth) {
                         screen.setCell(screenX, y + row, {
                             ...attrs,
-                            char: char[0] || ' ',
+                            char: char || ' ',
                             fg: fg ?? attrs.fg
                         });
                         screenX += stringWidth(char);
@@ -388,7 +391,7 @@ export class TextEditor extends Widget {
                     
                     screen.setCell(cursorColScreen, y + row, {
                         ...attrs,
-                        char: charUnderCursor[0] || ' ',
+                        char: charUnderCursor || ' ',
                         inverse: true
                     });
                 }
