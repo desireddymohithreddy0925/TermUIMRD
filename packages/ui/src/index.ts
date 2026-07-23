@@ -133,9 +133,7 @@ export type { DateRange, DateRangePickerOptions } from './DateRangePicker.js';
 export { ColorPicker } from './ColorPicker.js';
 export type { ColorPickerOptions } from './ColorPicker.js';
 
-export { Accordion } from '@termuijs/widgets';
-export type { AccordionOptions } from '@termuijs/widgets';
-export type { AccordionSection as AccordionItem } from '@termuijs/widgets';
+// Note: Accordion is now implemented natively in @termuijs/ui
 
 export { AppShell } from './AppShell.js';
 export type { AppShellOptions } from './AppShell.js';
@@ -219,6 +217,9 @@ export type { BreadcrumbItem, BreadcrumbOptions } from './Breadcrumb.js';
 
 export { Disclosure } from './Disclosure.js';
 export type { DisclosureOptions } from './Disclosure.js';
+
+export { Accordion } from './Accordion.js';
+export type { AccordionOptions, AccordionItem } from './Accordion.js';
 
 export { Listbar } from './Listbar.js';
 export type { ListbarOptions, ListbarItem } from './Listbar.js';
