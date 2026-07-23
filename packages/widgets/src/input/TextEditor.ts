@@ -45,6 +45,7 @@ export class TextEditor extends Widget {
     private _lineNumbers: boolean;
     private _theme: string;
     private _onChange?: (value: string) => void;
+    private readonly _keyHandler = (event: KeyEvent): void => this.handleKey(event);
 
     constructor(style: Partial<Style> = {}, opts: TextEditorOptions = {}) {
         super(style);
@@ -61,6 +62,14 @@ export class TextEditor extends Widget {
         this._lineNumbers = opts.lineNumbers ?? false;
         this._theme = opts.theme ?? 'default';
         this._onChange = opts.onChange;
+
+        this.events.on('key', this._keyHandler);
+    }
+
+    override mount(): void {
+        super.mount();
+        this.events.off('key', this._keyHandler);
+        this.events.on('key', this._keyHandler);
     }
 
     get content(): string {
@@ -380,7 +389,7 @@ export class TextEditor extends Widget {
                     if (currentCol >= this._scrollOffset.col && currentCol < this._scrollOffset.col + maxVisibleWidth) {
                         screen.setCell(screenX, y + row, {
                             ...attrs,
-                            char: char[0] || ' ',
+                            char: char || ' ',
                             fg: fg ?? attrs.fg
                         });
                         screenX += stringWidth(char);
@@ -398,7 +407,7 @@ export class TextEditor extends Widget {
                     
                     screen.setCell(cursorColScreen, y + row, {
                         ...attrs,
-                        char: charUnderCursor[0] || ' ',
+                        char: charUnderCursor || ' ',
                         inverse: true
                     });
                 }

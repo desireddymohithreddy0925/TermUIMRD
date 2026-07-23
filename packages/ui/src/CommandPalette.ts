@@ -128,7 +128,7 @@ export class CommandPalette extends Widget {
         const q = splitGraphemes(this._query.toLowerCase());
         if (q.length === 0) { this._filtered = [...this._commands]; } else {
             this._filtered = this._commands.filter(c => { 
-                const l = splitGraphemes(c.label.toLowerCase());
+                const l = splitGraphemes(`${c.label} ${c.category ?? ''}`.toLowerCase());
                 let qi = 0; 
                 for (let i = 0; i < l.length && qi < q.length; i++) { 
                     if (l[i] === q[qi]) qi++; 
@@ -158,7 +158,7 @@ export class CommandPalette extends Widget {
         }
         const bw = Math.min(60, width - 4);
         const totalVisRows = grouped.size + vis.length;
-        const bh = Math.min(totalVisRows + 3, height - 2);
+        const bh = Math.min(totalVisRows + 4, height - 2);
         const bx = x + Math.floor((width - bw) / 2);
         const by = y + 2;
         const border = getBorderChars('single');
