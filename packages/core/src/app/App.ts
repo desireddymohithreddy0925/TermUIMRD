@@ -6,6 +6,7 @@ import { Terminal, type TerminalOptions } from '../terminal/Terminal.js';
 import { Screen } from '../terminal/Screen.js';
 import { Renderer } from '../terminal/Renderer.js';
 import { LayerManager } from '../terminal/LayerManager.js';
+import { ContextMenuManager, type ContextMenuItem } from './ContextMenuManager.js';
 import { InputParser } from '../input/InputParser.js';
 import { FocusManager } from '../events/FocusManager.js';
 import { EventEmitter } from '../events/EventEmitter.js';
@@ -81,6 +82,7 @@ export class App {
     readonly focus: FocusManager;
     readonly events: EventEmitter<EventMap>;
     readonly layers: LayerManager;
+    readonly contextMenu: ContextMenuManager;
 
     private _rootWidget: RootWidget;
     private _options: AppOptions;
@@ -135,6 +137,7 @@ export class App {
         this.focus = new FocusManager();
         this.events = new EventEmitter();
         this.layers = new LayerManager(this.terminal.cols, this.terminal.rows);
+        this.contextMenu = new ContextMenuManager();
     }
 
     /**
@@ -246,6 +249,25 @@ export class App {
 
                 if (event.type === 'mousedown') {
                     const hitWidget = this._findWidgetAt(event.x, event.y);
+
+                    // Context Menu interception
+                    if (event.button === 'right' && hitWidget) {
+                        let menuTarget = hitWidget;
+                        let contextMenu: ContextMenuItem[] | undefined;
+                        while (menuTarget) {
+                            if (menuTarget.contextMenu && menuTarget.contextMenu.length > 0) {
+                                contextMenu = menuTarget.contextMenu;
+                                break;
+                            }
+                            menuTarget = menuTarget.parent;
+                        }
+                        
+                        if (contextMenu) {
+                            this.contextMenu.open(contextMenu, event.x, event.y);
+                            return;
+                        }
+                    }
+
                     if (hitWidget) {
                         this._clickedWidgetId = hitWidget.id;
                         hitWidget.events.emit('mouse', event);

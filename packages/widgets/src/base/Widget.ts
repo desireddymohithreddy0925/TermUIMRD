@@ -9,6 +9,7 @@ import {
     type Rect,
     type KeyEvent,
     type MouseEvent as TermMouseEvent,
+    type ContextMenuItem,
     defaultStyle,
     mergeStyles,
     createLayoutNode,
@@ -119,6 +120,9 @@ export abstract class Widget {
     onMouseEnter?: (event: TermMouseEvent) => void;
     /** Optional callback for mouse leave events */
     onMouseLeave?: (event: TermMouseEvent) => void;
+
+    /** Context menu items to display on right-click */
+    contextMenu?: ContextMenuItem[];
 
     /**
      * Dirty flag — true when this widget needs re-rendering.

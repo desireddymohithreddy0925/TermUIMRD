@@ -20,7 +20,6 @@ export {
     ProgressBar,
     Spinner,
     Widget,
-    ContextMenu,
 } from '@termuijs/widgets';
 
 // ── New components ──
@@ -58,6 +57,9 @@ export type { ComboboxOption, ComboboxOptions } from './Combobox.js';
 
 export { LinearPrompt } from './LinearPrompt.js';
 export type { LinearPromptOption, LinearPromptOptions } from './LinearPrompt.js';
+
+export { ContextMenu } from './ContextMenu.js';
+export type { ContextMenuOptions } from './ContextMenu.js';
 
 export { Pages } from './Pages.js';
 export type { Page, PagesOptions } from './Pages.js';
