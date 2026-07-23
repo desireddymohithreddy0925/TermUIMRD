@@ -951,21 +951,31 @@ describe('useStore selector memoization', () => {
 })
 
 describe('persist – symlink resolution', () => {
-    let appConfig = process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config');
-    if (process.platform === 'win32') appConfig = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
-    if (process.platform === 'darwin') appConfig = path.join(os.homedir(), 'Library', 'Application Support');
-
-    const storesDir = path.join(appConfig, 'termuijs-stores');
     let testRoot = '';
     let storeDir = '';
     let realDir = '';
     let linkDir = '';
-    const symlinkType: any = process.platform === 'win32' ? 'junction' : 'dir';
+    const symlinkType = process.platform === 'win32' ? 'junction' : 'dir';
+    let originalPlatform: string;
+    let originalAppData: string | undefined;
+    let originalXdgConfigHome: string | undefined;
 
     beforeEach(() => {
-        fs.mkdirSync(storesDir, { recursive: true });
-        testRoot = fs.realpathSync(fs.mkdtempSync(path.join(storesDir, 'symtest-')));
-        storeDir = testRoot;
+        testRoot = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'symtest-')));
+        
+        // Force platform to linux so store.ts uses XDG_CONFIG_HOME and we don't have to mock os.homedir (ESM limitation)
+        originalPlatform = process.platform;
+        Object.defineProperty(process, 'platform', { value: 'linux' });
+
+        originalAppData = process.env.APPDATA;
+        originalXdgConfigHome = process.env.XDG_CONFIG_HOME;
+        process.env.APPDATA = testRoot;
+        process.env.XDG_CONFIG_HOME = testRoot;
+
+        // Since we forced linux, appConfig is testRoot (from XDG_CONFIG_HOME)
+        const appConfig = testRoot;
+
+        storeDir = path.join(appConfig, 'termuijs-stores');
         realDir = path.join(storeDir, 'real');
         linkDir = path.join(storeDir, 'link');
 
@@ -977,9 +987,15 @@ describe('persist – symlink resolution', () => {
     });
 
     afterEach(() => {
+        Object.defineProperty(process, 'platform', { value: originalPlatform });
+        if (originalAppData !== undefined) process.env.APPDATA = originalAppData;
+        else delete process.env.APPDATA;
+        if (originalXdgConfigHome !== undefined) process.env.XDG_CONFIG_HOME = originalXdgConfigHome;
+        else delete process.env.XDG_CONFIG_HOME;
+
         vi.useRealTimers();
         if (testRoot) {
-            try { fs.rmSync(testRoot, { recursive: true, force: true }); } catch { /* ok */ }
+            fs.rmSync(testRoot, { recursive: true, force: true });
         }
     });
 
