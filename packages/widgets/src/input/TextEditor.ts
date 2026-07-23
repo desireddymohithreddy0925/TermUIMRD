@@ -61,6 +61,18 @@ export class TextEditor extends Widget {
         this._lineNumbers = opts.lineNumbers ?? false;
         this._theme = opts.theme ?? 'default';
         this._onChange = opts.onChange;
+
+        this._keyHandler = this._keyHandler.bind(this);
+        this.events.on('key', this._keyHandler);
+    }
+
+    private _keyHandler(event: KeyEvent): void {
+        this.handleKey(event);
+    }
+
+    override mount(): void {
+        super.mount();
+        // Additional mounting setup if needed
     }
 
     get content(): string {

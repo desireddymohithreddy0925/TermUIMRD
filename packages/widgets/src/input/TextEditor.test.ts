@@ -28,8 +28,8 @@ describe('TextEditor', () => {
         editor.content = '';
         editor.render(screen);
         
-        // type "x"
-        editor.handleKey({ key: 'x' } as KeyEvent);
+        // type "x" by emitting via events
+        editor.events.emit('key', { key: 'x' } as KeyEvent);
         expect(editor.content).toBe('x');
     });
 
