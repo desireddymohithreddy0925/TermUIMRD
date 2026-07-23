@@ -239,7 +239,7 @@ for (const [category, commands] of grouped) {
                     ...attrs,
                     fg: (active || wasMatch) ? this._activeColor : attrs.fg,
                     bold: active || wasMatch,
-                    underline: wasMatch && !active
+                    underline: wasMatch
                 });
                 screenX += stringWidth(currentSegment);
                 currentSegment = ch;
@@ -254,7 +254,7 @@ for (const [category, commands] of grouped) {
                 ...attrs,
                 fg: (active || wasMatch) ? this._activeColor : attrs.fg,
                 bold: active || wasMatch,
-                underline: wasMatch && !active
+                underline: wasMatch
             });
         }
 

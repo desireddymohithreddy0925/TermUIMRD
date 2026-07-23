@@ -1069,13 +1069,13 @@ describe('CommandPalette', () => {
             palette.insertChar('s');
             palette.insertChar('y');
             palette.insertChar('s');
+            // @ts-ignore - access private field for testing
             const filtered: Command[] = (palette as any)._filtered;
             expect(filtered).toHaveLength(1);
             expect(filtered[0]!.id).toBe('1');
         });
 
         it('highlights matched characters correctly', () => {
-            vi.spyOn(caps, 'unicode', 'get').mockReturnValue(true);
             const cmds = [
                 { id: '1', label: 'Settings', action: vi.fn() },
             ];
@@ -1086,10 +1086,20 @@ describe('CommandPalette', () => {
             palette.insertChar('t');
             
             const screen = renderPalette(palette);
-            // Verify that highlighting is applied in some way (e.g. style differences)
-            // But just testing it doesn't crash during rendering is the main requirement from reviewer
-            expect(allText(screen)).toContain('S');
-            expect(allText(screen)).toContain('t');
+            // Find the cells containing 'S' and 't' on row 6 (where Settings is rendered)
+            const row6 = screen.back[6];
+            let foundS: any = null;
+            let foundT: any = null;
+            if (row6) {
+                foundS = row6.find(c => c.char === 'S');
+                foundT = row6.find(c => c.char === 't');
+            }
+            
+            expect(foundS).toBeDefined();
+            expect(foundS?.underline).toBe(true);
+            
+            expect(foundT).toBeDefined();
+            expect(foundT?.underline).toBe(true);
         });
     });
 });
