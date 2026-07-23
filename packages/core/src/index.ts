@@ -90,6 +90,7 @@ export type { TestScreen } from './terminal/TestBackend.js';
 export { App } from './app/App.js';
 export type { AppOptions, RootWidget } from './app/App.js';
 export { ContextMenuManager, type ContextMenuItem, type ContextMenuState, type ContextMenuEvents } from './app/ContextMenuManager.js';
+export { TooltipManager, type TooltipState, type TooltipEvents } from './app/TooltipManager.js';
 export { shouldUseFallback, renderFallback } from './app/Fallback.js';
 export { renderInlineToTerminal, createInlineViewport } from './inline-viewport.js';
 

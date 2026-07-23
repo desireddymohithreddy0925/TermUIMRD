@@ -124,6 +124,9 @@ export abstract class Widget {
     /** Context menu items to display on right-click */
     contextMenu?: ContextMenuItem[];
 
+    /** Tooltip text to show on hover or focus */
+    tooltip?: string;
+
     /**
      * Dirty flag — true when this widget needs re-rendering.
      * Newly created widgets start dirty.
