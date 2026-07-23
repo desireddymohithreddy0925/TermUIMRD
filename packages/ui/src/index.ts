@@ -191,6 +191,9 @@ export type { RatingOptions } from './Rating.js';
 export { ThemeSwitcher } from './ThemeSwitcher.js';
 export type { ThemeSwitcherOptions } from './ThemeSwitcher.js';
 
+export { toast } from './toastAPI.js';
+export { ToastProvider } from './ToastProvider.js';
+
 export { TreeSelect } from './TreeSelect.js';
 export type { TreeSelectNode, TreeSelectOptions } from './TreeSelect.js';
 export { EmailInput } from './EmailInput.js';
