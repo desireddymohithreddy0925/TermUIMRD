@@ -137,6 +137,8 @@ export type { AccordionSection as AccordionItem } from '@termuijs/widgets';
 
 export { AppShell } from './AppShell.js';
 export type { AppShellOptions } from './AppShell.js';
+export { ToastProvider, toast } from './ToastProvider.js';
+export type { ToastProviderOptions, GlobalToastOptions, GlobalToastType } from './ToastProvider.js';
 export { Pagination } from './Pagination.js';
 export type { PaginationOptions } from './Pagination.js';
 
