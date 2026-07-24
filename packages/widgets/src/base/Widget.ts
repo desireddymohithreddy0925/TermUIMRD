@@ -139,6 +139,10 @@ export abstract class Widget {
 
     /** Enable animated layout transitions for size/position changes */
     public layoutTransition: Partial<SpringConfig> | SpringPresetName | boolean = false;
+
+    /** Context menu items. If provided, right click will open it. */
+    public contextMenu?: any[];
+
     private _layoutCancel: (() => void) | null = null;
     private _targetRect: Rect | null = null;
 

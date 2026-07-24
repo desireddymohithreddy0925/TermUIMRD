@@ -15,6 +15,7 @@ import { createKeyEvent } from '../events/types.js';
 import { renderFallback, shouldUseFallback } from './Fallback.js';
 import { mergeBorders } from '../renderer/border-merge.js';
 import { renderInlineToTerminal } from '../inline-viewport.js';
+import { ContextMenuManager } from './ContextMenuManager.js';
 
 type HitGridEntry = {
     x: number;
@@ -81,6 +82,8 @@ export class App {
     readonly focus: FocusManager;
     readonly events: EventEmitter<EventMap>;
     readonly layers: LayerManager;
+    /** Global ContextMenuManager for floating menus. */
+    readonly contextMenu = new ContextMenuManager();
 
     private _rootWidget: RootWidget;
     private _options: AppOptions;
@@ -245,12 +248,23 @@ export class App {
                 this.events.emit('mouse', event);
 
                 if (event.type === 'mousedown') {
-                    const hitWidget = this._findWidgetAt(event.x, event.y);
-                    if (hitWidget) {
-                        this._clickedWidgetId = hitWidget.id;
-                        hitWidget.events.emit('mouse', event);
+                    if (event.button === 'right') {
+                        const hitWidget = this._findWidgetAt(event.x, event.y);
+                        if (hitWidget && (hitWidget as any).contextMenu && (hitWidget as any).contextMenu.length > 0) {
+                            this.contextMenu.open(event.x, event.y, (hitWidget as any).contextMenu);
+                        } else {
+                            this.contextMenu.close();
+                        }
                     } else {
-                        this._clickedWidgetId = null;
+                        // Dismiss context menu on left click
+                        this.contextMenu.close();
+                        const hitWidget = this._findWidgetAt(event.x, event.y);
+                        if (hitWidget) {
+                            this._clickedWidgetId = hitWidget.id;
+                            hitWidget.events.emit('mouse', event);
+                        } else {
+                            this._clickedWidgetId = null;
+                        }
                     }
                 }
 

@@ -140,6 +140,9 @@ export type { AppShellOptions } from './AppShell.js';
 export { Pagination } from './Pagination.js';
 export type { PaginationOptions } from './Pagination.js';
 
+export { ContextMenuOverlay } from './ContextMenuOverlay.js';
+export type { ContextMenuOverlayOptions } from './ContextMenuOverlay.js';
+
 export { ScalePrompt } from './ScalePrompt.js';
 export type { ScalePromptOptions } from './ScalePrompt.js';
 
