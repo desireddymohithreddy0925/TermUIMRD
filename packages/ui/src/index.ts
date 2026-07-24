@@ -135,6 +135,9 @@ export { Accordion } from '@termuijs/widgets';
 export type { AccordionOptions } from '@termuijs/widgets';
 export type { AccordionSection as AccordionItem } from '@termuijs/widgets';
 
+export { AnimatedAccordion, AnimatedAccordionItem } from './AnimatedAccordion.js';
+export type { AnimatedAccordionOptions, AnimatedAccordionItemOptions } from './AnimatedAccordion.js';
+
 export { AppShell } from './AppShell.js';
 export type { AppShellOptions } from './AppShell.js';
 export { Pagination } from './Pagination.js';
